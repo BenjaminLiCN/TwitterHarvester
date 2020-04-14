@@ -33,7 +33,7 @@ In this project, we built ...
 | Honglong Zhang | | damonzhl@student.unimelb.edu.au | [LinkedIn]() |
 | Wei Lin| |wlin8@student.unimelb.edu.au| [LinkedIn]() |
 | Yangyang Hu | | yangyangh1@student.unimelb.edu.au| [LinkedIn]() |
-| Yijing Li |  | jili@student.unimelb.edu.au | [LinkedIn]() |
+| Jingyi Li |  | jili@student.unimelb.edu.au | [LinkedIn]() |
 
 ### **License**
 ---
