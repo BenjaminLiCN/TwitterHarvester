@@ -1,0 +1,3 @@
+# this are the command line.
+sudo docker-compose run web django-admin startproject  twitterHarvester .
+docker-compose up
