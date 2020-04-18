@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  couchdb1:
+    image: couchdb:3.0.0
+    command: -name couchdb@172.16.131.118 -setcookie thecookie
+    environment:
+      COUCHDB_USER: "ccc"
+      COUCHDB_PASSWORD: "happyccc"
+    restart: always
+    networks:
+      couchdb-cluster:
+        ipv4_address: 172.16.131.118
+    ports:
+      - "15984:5984"
+
+  cluster-setup:
+    build: .
+#    image: gesellix/couchdb-cluster-config:latest
+    command: setup --delay 5s --timeout 60s --username ${COUCHDB_USER:-root} --password ${COUCHDB_PASSWORD:-a-secret} -nodes 172.16.131.118
+    networks:
+      couchdb-cluster:
+        ipv4_address: 172.26.128.50
+
+networks:
+  couchdb-cluster:
+    driver: overlay
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.0.0/16"
