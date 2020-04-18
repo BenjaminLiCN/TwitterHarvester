@@ -3,9 +3,9 @@ availability_zone: melbourne-qh2-uom
 
 # Volume
 volumes:
-  - vol_name: bjm-vol-1
+  - vol_name: benjamin-1
     vol_size: 30
-  - vol_name: bjm-vol-2
+  - vol_name: benjamin-2
     vol_size: 30
 
 
@@ -27,9 +27,9 @@ security_groups:
 # Instance
 instances:
   - name: bjm-1
-    volumes: ['bjm-vol-1']
+    volumes: ['benjamin-1']
   - name: bjm-2
-    volumes: ['bjm-vol-2']
+    volumes: ['benjamin-2']
 
 instance_image: 45225edb-66d8-4fd0-bf41-132a31a18166
 instance_key_name: benjaminnectar
