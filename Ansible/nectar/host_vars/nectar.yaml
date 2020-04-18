@@ -3,14 +3,11 @@ availability_zone: melbourne-qh2-uom
 
 # Volume
 volumes:
-  - vol_name: demo-vol-1-1
-    vol_size: 10
-  - vol_name: demo-vol-1-2
-    vol_size: 10
-  - vol_name: demo-vol-2-1
-    vol_size: 10
-  - vol_name: demo-vol-2-2
-    vol_size: 10
+  - vol_name: bjm-vol-1
+    vol_size: 30
+  - vol_name: bjm-vol-2
+    vol_size: 30
+
 
 # Security group
 security_groups:
@@ -29,11 +26,11 @@ security_groups:
 
 # Instance
 instances:
-  - name: demo-1
-    volumes: ['demo-vol-1-1', 'demo-vol-1-2']
-  - name: demo-2
-    volumes: ['demo-vol-2-1', 'demo-vol-2-2']
+  - name: bjm-1
+    volumes: ['bjm-vol-1']
+  - name: bjm-2
+    volumes: ['bjm-vol-2']
 
 instance_image: 45225edb-66d8-4fd0-bf41-132a31a18166
-instance_key_name: happyccc
+instance_key_name: benjaminnectar
 instance_flavor: uom.mse.2c9g
