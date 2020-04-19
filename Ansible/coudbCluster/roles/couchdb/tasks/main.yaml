@@ -16,6 +16,24 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
+- name: Config dockerfile
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: Dockerfile
+    dest: "{{ couchdb_dir }}/Dockerfile"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Config requirement
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: requirements.txt
+    dest: "{{ couchdb_dir }}/requirements.txt"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
 - name: Run docker compose
   tags: 'couchdb'
   become: yes
@@ -25,3 +43,28 @@
     state: present
     remove_orphans: yes
     recreate: always
+
+- name: judge wheter web exist
+  command: "ls {{ couchdb_dir }}/twitterHarvester"
+  ignore_errors: True
+  register: result
+
+- name: Run docker run web
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose run web django-admin startproject  twitterHarvester ."
+  when: result is failed
+
+- name: Run docker web up
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose up -d"
+
+- name: Config settings.py
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: settings.py
+    dest: "{{ couchdb_dir }}/twitterHarvester/settings.py"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
