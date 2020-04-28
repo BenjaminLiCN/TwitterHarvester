@@ -29,6 +29,7 @@
     search_regex: OpenSSH
   loop: '{{ os_instance.results }}'
   when: item.openstack is defined
+  ignore_errors: yes
 
 # Add hosts to Ansible in-memory inventory
 - name: Add host

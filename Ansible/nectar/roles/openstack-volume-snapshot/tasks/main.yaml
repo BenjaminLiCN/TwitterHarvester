@@ -10,3 +10,4 @@
     force: yes
     availability_zone: '{{ availability_zone }}'
   loop: '{{ volumes }}'
+  ignore_errors: yes
