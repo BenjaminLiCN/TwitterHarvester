@@ -1,246 +1,134 @@
 ---
-- name: ensure python is installed
-  become: yes
-  apt:
-    name: python
-    update_cache: yes
-    state: present
-
-- name: if already installed, ensure CouchDB is not running (otherwise, the Erlang processes get in the way)
-  become: yes
-  service: name=couchdb state=stopped
-  ignore_errors: yes
-
-
-- name: install necessary dependencies
-  become: yes
-  shell: apt-get --no-install-recommends -y install build-essential pkg-config  libicu-dev libmozjs185-dev libcurl4-openssl-dev
-#- name: download the source code for Mozilla SpiderMonkey 1.85
+#- name: create couchdb_dir
+#  tags: 'couchdb'
 #  become: yes
-#  copy: src=js185-1.0.0.tar.gz dest=/tmp
+#  file:
+#    path: "{{ couchdb_dir }}"
+#    state: directory
 #
-#- name: unarchive the tar file
-#  become: yes
-#  shell: chdir=/tmp tar -xzf js185-1.0.0.tar.gz
-
-- name: ensure zip is installed
-  become: yes
-  apt:
-    name: zip
-    update_cache: yes
-    state: present
-
-#- name: install the build-essential
-#  become: yes
-#  apt:
-#    name: build-essential
-#    update_cache: yes
-#    state: present
-
-#- name: compile Mozilla SpiderMonkey 1.8.5
-#  become: yes
-#  shell: chdir=/tmp/js-1.8.5/js/src {{ item }}
-#  with_items:
-#  - ./configure
-#  - make --silent
-#  - make install --silent
-
-#- name: copy the SpiderMonkey header files to a location that CouchDB can read.
-#  become: yes
-#  shell: cp -rf /usr/local/include/js /usr/include/js
-
-- name: add a ld.so config for the folder /usr/local/lib
-  become: yes
-  copy: src=usrlocal.conf dest=/etc/ld.so.conf.d/usrlocal.conf
-
-- name: run ldconfig
-  become: yes
-  shell: /sbin/ldconfig
-  
-- name: update source list for couchdb dependencies
-  become: yes
-  copy: src=sources.list dest=/etc/apt/sources.list
-  
-- name: update apt-get
-  become: yes
-  shell: apt-get update
-
-
-
-- name: Install libicu-dev
-  become: yes
-  apt:
-    name: libicu-dev
-    update_cache: yes
-    state: present
-
-- name: ensure erlang reltool is installed
-  become: yes
-  apt:
-    name: erlang-reltool
-    update_cache: yes
-    state: present
-
-- name: ensure Python pip is installed
-  become: yes
-  apt:
-    name: python-pip
-    update_cache: yes
-    state: present
-
-- name: ensure sphinx is installed
-  become: yes
-  shell: pip install sphinx
-
-- name: download CouchDB 2.0.0
-  become: yes
-  copy: src=apache-couchdb-2.0.0.tar.gz dest=/tmp
-
-
-- name: unarchive the .tar.gz file
-  become: yes
-  shell: tar -xvzf apache-couchdb-2.0.0.tar.gz chdir=/tmp
-  tags: unarchive
-
-- name: execute configure
-  become: yes
-  shell: ./configure chdir=/tmp/apache-couchdb-2.0.0
-  tags: configure
-  async: 1800
-
-- name: install erlang 19 1
-  become: yes
-  shell: wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
-
-- name: install erlang 19 2
-  become: yes
-  shell: dpkg -i erlang-solutions_1.0_all.deb
-  
-- name: install erlang 19 3
-  become: yes
-  shell: apt-get update
-
-- name: Install erlang
-  become: yes
-  apt:
-    name: esl-erlang=1:19.3.6.13-1
-    state: present
-  ignore_errors: yes
-
-- name: install dependencies for couchdb
-  become: yes
-  apt:
-    name: couchdb
-    state: build-dep
-  ignore_errors: yes
-  
-- name: ensure epmd is not running
-  become: yes
-  shell: pkill epmd
-  ignore_errors: yes
-
-- name: execute make
-  become: yes
-  shell: chdir=/tmp/apache-couchdb-2.0.0 {{ item }}
-  with_items:
-  - make clean
-  - make
-  - make release
-  tags: make
-
-- name: copy the rel/couchdb folder to /usr/local/lib/
-  become: yes
-  shell: cp -r /tmp/apache-couchdb-2.0.0/rel/couchdb /usr/local/lib
-
-- name: apply the cluster configuration
-  become: yes
-  copy: src=cluster.local.ini dest=/usr/local/lib/couchdb/etc/local.ini
-
-- name: change the vm.args file
-  become: yes
-  template: src=vm.args.j2 dest=/usr/local/lib/couchdb/etc/vm.args
-
-- name: install the sysv script to run CouchDB as a service
-  become: yes
-  copy: src=couchdb dest=/etc/init.d/couchdb mode=0755
-  
-- name: unmask couchdb
-  become: yes
-  shell: systemctl unmask couchdb
-  
-- name: start CouchDB and ensure it is enabled at boot time
-  become: yes
-  systemd:
-    name: couchdb
-    state: started
-    enabled: yes
-
-- name: ensure Python httplib2 is installed
-  become: yes
-  apt:
-    name: python-httplib2
-    update_cache: yes
-    state: present
-
-- name: check that we can ping CouchDB on all its ports
-  become: yes
-  uri: url=http://127.0.0.1:{{ item }}
-  with_items:
-  - 5986
-  - 5984
-
-- include: cluster.yaml
-  become: yes
-  tags: configure_cluster
-
-
-
-
-- name: create couchdb_dir
+- name: Configure compose
   tags: 'couchdb'
   become: yes
-  file:
-    path: "{{ couchdb_dir }}"
-    state: directory
-  
-
-#- name: Configure compose
+  template:
+    src: docker-compose.yaml.j2
+    dest: "{{ couchdb_dir }}/docker-compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+#
+#- name: Config dockerfile
 #  tags: 'couchdb'
 #  become: yes
 #  template:
-#    src: docker-compose.yaml.j2
-#    dest: "{{ couchdb_dir }}/docker-compose.yaml"
+#    src: Dockerfile
+#    dest: "{{ couchdb_dir }}/Dockerfile"
 #    owner: "{{ ansible_user }}"
 #    group: "{{ ansible_user }}"
-
-- name: Config dockerfile
-  tags: 'couchdb'
-  become: yes
-  template:
-    src: Dockerfile
-    dest: "{{ couchdb_dir }}/Dockerfile"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-
-- name: Config requirement
-  tags: 'couchdb'
-  become: yes
-  template:
-    src: requirements.txt
-    dest: "{{ couchdb_dir }}/requirements.txt"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-
-#- name: Run docker compose
+#
+#- name: Config requirement
 #  tags: 'couchdb'
 #  become: yes
-#  docker_compose:
-#    project_src: "{{ couchdb_dir }}"
-#    pull: yes
-#    state: present
-#    remove_orphans: yes
-#    recreate: always
+#  template:
+#    src: requirements.txt
+#    dest: "{{ couchdb_dir }}/requirements.txt"
+#    owner: "{{ ansible_user }}"
+#    group: "{{ ansible_user }}"
+#
+- name: Remove previous couchdb container
+  become: yes
+  shell: |
+    docker stop couchdb_db_1
+    docker rm couchdb_db_1
+    
+- name: Run docker compose
+  tags: 'couchdb'
+  become: yes
+  docker_compose:
+    project_src: "{{ couchdb_dir }}"
+    pull: yes
+    state: present
+    remove_orphans: yes
+    recreate: always
+    
+- name: action enable_cluster
+  become: yes
+  uri:
+    url: http://{{ ansible_host }}:5984/_cluster_setup
+    method: POST
+    return_content: yes
+    user: admin
+    password: password
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body: {"action": "enable_cluster", "bind_address": "0.0.0.0", "username": "admin", "password": "password", "node_count": "4"}
+    body_format: json
+    validate_certs: no
+    status_code: 400
+  ignore_errors: yes
 
+- name: action coordinator enable
+  become: yes
+  uri:
+    url: http://{{ ansible_host }}:5984/_cluster_setup
+    method: POST
+    return_content: yes
+    user: admin
+    password: password
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body: {"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "admin", "password":"password", "port": 5984, "node_count": "4", "remote_node": "{{ item }}", "remote_current_user": "admin", "remote_current_password": "password" }
+    body_format: json
+    validate_certs: no
+    status_code: 201
+  with_items: "{{ groups['couches'] }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
+
+- name: action coordinator add_node
+  become: yes
+  uri:
+    url: http://{{ ansible_host }}:5984/_cluster_setup
+    method: POST
+    return_content: yes
+    user: admin
+    password: password
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body: {"action": "add_node", "host":"{{ item }}", "port": "5984", "username": "admin", "password":"password"}
+    body_format: json
+    validate_certs: no
+    status_code: 201
+  with_items: "{{ groups['couches'] }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
+
+- name: action coordinator finish_cluster
+  become: yes
+  uri:
+    url: http://{{ ansible_host }}:5984/_cluster_setup
+    method: POST
+    return_content: yes
+    user: admin
+    password: password
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body: {"action": "finish_cluster"}
+    body_format: json
+    validate_certs: no
+    status_code: 201
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+  
+- name: check cluster status
+  become: yes
+  uri:
+    url: http://localhost:5984/_membership
+    method: GET
+    return_content: yes
+    status_code: 200
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+  ignore_errors: yes
+  
 - name: judge wheter web exist
   command: "ls {{ couchdb_dir }}/twitterHarvester"
   ignore_errors: True
