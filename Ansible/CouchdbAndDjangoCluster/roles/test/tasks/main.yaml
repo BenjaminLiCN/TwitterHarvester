@@ -1,0 +1,7 @@
+---
+
+- name: enable the cluster
+  become: yes
+  shell: |
+    JSON='{"action":"enable_cluster","bind_address":"0.0.0.0","username":"admin","password":"password","node_count":"2"}'
+    curl -X POST -H "Content-Type: application/json"  --data $JSON http://admin:password@127.0.0.1:5984/_cluster_setup

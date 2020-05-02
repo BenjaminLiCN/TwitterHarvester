@@ -1,0 +1,104 @@
+---
+- name: create couchdb_dir
+  tags: 'couchdb'
+  become: yes
+  file:
+    path: "{{ couchdb_dir }}"
+    state: directory
+
+- name: Configure compose
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: docker-compose.yaml.j2
+    dest: "{{ couchdb_dir }}/docker-compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+#
+- name: Config dockerfile
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: Dockerfile
+    dest: "{{ couchdb_dir }}/Dockerfile"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Config requirement
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: requirements.txt
+    dest: "{{ couchdb_dir }}/requirements.txt"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Remove previous couchdb container
+  become: yes
+  shell: |
+    docker stop couchdb_db_1
+    docker rm couchdb_db_1
+  ignore_errors: yes
+
+- name: Run docker compose
+  tags: 'couchdb'
+  become: yes
+  docker_compose:
+    project_src: "{{ couchdb_dir }}"
+    pull: yes
+    state: present
+    remove_orphans: yes
+    recreate: always
+
+- name: wait for 5984
+  wait_for:
+    port: 5984
+    delay: 10
+- name: common enable_cluster
+  raw: |
+    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"enable_cluster","bind_address":"0.0.0.0","username":"admin","password":"password","node_count":"4"}'
+- name: enable_cluster
+  raw: |
+    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"enable_cluster","bind_address":"0.0.0.0","username":"admin","password":"password","port":"5984","node_count":"4","remote_node":"{{item}}","remote_current_user":"admin","remote_current_password":"password"}'
+  with_items: "{{ groups['couches'] }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
+- name: add_node
+  raw: |
+    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"add_node","username":"admin","password":"password","host":"{{item}}","port":5984}'
+  with_items: "{{ groups['couches'] }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
+- name: finish_cluster
+  raw: |
+    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"finish_cluster"}'
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+
+
+- name: judge wheter web exist
+  command: "ls {{ couchdb_dir }}/twitterHarvester"
+  ignore_errors: True
+  register: result
+
+- name: Run docker run django
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose run web django-admin startproject  twitterHarvester ."
+  when: result is failed
+
+- name: Run docker compose up
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose up -d"
+
+- name: git clone code
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} git clone https://github.com/Damonzhl/backend.git"
+
+- name: Config settings.py
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: settings.py
+    dest: "{{ couchdb_dir }}/twitterHarvester/settings.py"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

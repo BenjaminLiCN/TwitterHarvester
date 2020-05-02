@@ -1,0 +1,22 @@
+---
+
+- name: enable the cluster
+  become: yes
+  shell: |
+    JSON='{"action":"enable_cluster","bind_address":"0.0.0.0","username":"admin","password":"password","node_count":"{{ COUNT_NODES }}"}'
+    curl -X POST -H "Content-Type: application/json"  --data $JSON http://admin:password@127.0.0.1:5984/_cluster_setup
+  
+- name: add nodes to the cluster
+  become: yes
+  shell: |
+    JSON='{"action":"add_node","username":"admin","password":"password","host":"{{ item }}","port":5984}'
+    curl -X POST -H "Content-Type: application/json"  --data $JSON http://admin:password@127.0.0.1:5984/_cluster_setup
+  with_items: "{{groups['couches']}}"
+  when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
+
+- name: finish the cluster
+  become: yes
+  shell: |
+    JSON='{"action":"finish_cluster"}'
+    curl -X POST -H "Content-Type: application/json"  --data $JSON http://admin:password@127.0.0.1:5984/_cluster_setup
+  when: inventory_hostname == "{{ groups.couches[0] }}"
