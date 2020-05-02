@@ -1,28 +1,13 @@
 ---
 
-- name: add github ssh key
-  tags: 'git'
-  become: yes
-  template:
-    src: id_rsa
-    dest: /home/ubuntu/.ssh/GitHub
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0644
 
-- name: configure ssh to use ansible key for github.com
-  template:
-    src: ssh_config
-    dest: /home/ubuntu/.ssh/config
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0644
-# configure ssh to use ansible key for github.com
-
-- name: clone source code from git
+- name: Get updated files from git repository
   become: yes
   git:
-    repo: ssh://Damonzhl@github.com/Damonzhl/backend.git
-    key_file: /home/ubuntu/.ssh/GitHub
-    dest: /home/ubuntu/backend
+    repo: "https://{{ githubuser | urlencode }}:{{ githubpassword | urlencode }}@github.com/Damonzhl/backend.git"
+    dest: /tmp/backend
 
+- name: update the backend file
+  tags: 'git'
+  become: yes
+  command: "cp -r /tmp/backend /couchdb"
