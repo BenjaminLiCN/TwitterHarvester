@@ -1,0 +1,10 @@
+- hosts: couches
+  vars_files:
+    - host_vars/couchdb.yaml
+  gather_facts: false
+  roles:
+    #- role: test
+    - role: common
+    - role: volumes
+    - role: docker
+    - role: couchdb
