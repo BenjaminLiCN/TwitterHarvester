@@ -3,5 +3,6 @@ magic_cookie: "benjamin"
 release_candidate: RC4
 COUNT_NODES: 4
 couchdb_dir: /couchdb
+backend_dir: /django
 couch_user: admin
 couch_password: password

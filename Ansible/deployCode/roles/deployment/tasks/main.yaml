@@ -1,6 +1,28 @@
 ---
 
-- name: git pull
+- name: add github ssh key
   tags: 'git'
   become: yes
-  command: "chdir={{ couchdb_dir }} git pull https://Damonzhl:DUO0216ben0901@github.com/Damonzhl/backend.git"
+  template:
+    src: id_rsa
+    dest: /home/ubuntu/.ssh/GitHub
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0644
+
+- name: configure ssh to use ansible key for github.com
+  template:
+    src: ssh_config
+    dest: /home/ubuntu/.ssh/config
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0644
+# configure ssh to use ansible key for github.com
+
+- name: clone source code from git
+  become: yes
+  git:
+    repo: ssh://Damonzhl@github.com/Damonzhl/backend.git
+    key_file: /home/ubuntu/.ssh/GitHub
+    dest: /home/ubuntu/backend
+
