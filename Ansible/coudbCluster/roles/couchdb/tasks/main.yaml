@@ -15,30 +15,30 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 #
-#- name: Config dockerfile
-#  tags: 'couchdb'
-#  become: yes
-#  template:
-#    src: Dockerfile
-#    dest: "{{ couchdb_dir }}/Dockerfile"
-#    owner: "{{ ansible_user }}"
-#    group: "{{ ansible_user }}"
-#
-#- name: Config requirement
-#  tags: 'couchdb'
-#  become: yes
-#  template:
-#    src: requirements.txt
-#    dest: "{{ couchdb_dir }}/requirements.txt"
-#    owner: "{{ ansible_user }}"
-#    group: "{{ ansible_user }}"
-#
-#- name: Remove previous couchdb container
-#  become: yes
-#  shell: |
-#    docker stop couchdb_db_1
-#    docker rm couchdb_db_1
-#  ignore_errors: yes
+- name: Config dockerfile
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: Dockerfile
+    dest: "{{ couchdb_dir }}/Dockerfile"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Config requirement
+  tags: 'couchdb'
+  become: yes
+  template:
+    src: requirements.txt
+    dest: "{{ couchdb_dir }}/requirements.txt"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Remove previous couchdb container
+  become: yes
+  shell: |
+    docker stop couchdb_db_1
+    docker rm couchdb_db_1
+  ignore_errors: yes
 
 - name: Run docker compose
   tags: 'couchdb'
@@ -69,7 +69,7 @@
   when: inventory_hostname == "{{ groups.couches[0] }}" and inventory_hostname != item
 - name: finish_cluster
   raw: |
-    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"finish_cluster"}' 
+    curl -X POST -H "Content-Type: application/json" http://admin:password@127.0.0.1:5984/_cluster_setup -d '{"action":"finish_cluster"}'
   when: inventory_hostname == "{{ groups.couches[0] }}"
 
 
