@@ -89,6 +89,11 @@
   become: yes
   command: "chdir={{ couchdb_dir }} docker-compose up -d"
 
+- name: git clone code
+  tags: 'couchdb'
+  become: yes
+  command: "chdir={{ couchdb_dir }} git clone https://github.com/Damonzhl/backend.git"
+
 - name: Config settings.py
   tags: 'couchdb'
   become: yes
