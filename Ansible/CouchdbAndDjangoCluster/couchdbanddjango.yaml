@@ -7,5 +7,5 @@
 #    - role: common
 #    - role: volumes
 #    - role: docker
-#    - role: couchdbanddjango
-    - role: nginx
+    - role: couchdbanddjango
+#   - role: nginx
