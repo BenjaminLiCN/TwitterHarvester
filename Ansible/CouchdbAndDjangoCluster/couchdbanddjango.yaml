@@ -4,8 +4,8 @@
   gather_facts: false
   roles:
     #- role: test
-#    - role: common
-#    - role: volumes
-#    - role: docker
+    - role: common
+    - role: volumes
+    - role: docker
     - role: couchdbanddjango
-#   - role: nginx
+    - role: nginx
