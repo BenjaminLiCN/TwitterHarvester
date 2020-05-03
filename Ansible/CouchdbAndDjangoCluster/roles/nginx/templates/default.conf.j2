@@ -1,8 +1,8 @@
 upstream backenders{
-    server 172.26.132.166:8080 weight=2;
-    server 172.26.130.23:8080 weight=2;
-    server 172.26.130.218:8080 weight=2;
-    server 127.0.0.1:8080 weight=1;
+    server 172.26.132.166:8080/profile weight=2;
+    server 172.26.130.23:8080/profile weight=2;
+    server 172.26.130.218:8080/profile weight=2;
+    server 127.0.0.1:8080/profile weight=1;
 }
 
 
@@ -23,7 +23,7 @@ server {
     listen       8081;
     server_name  localhost;
     #charset koi8-r;
-    #access_log  /var/log/nginx/host.access.log  main;
+    access_log  /var/log/nginx/host.access.log  main;
 
     location / {
         proxy_pass http://backenders;
