@@ -1,24 +1,32 @@
 ---
-- name: add github ssh key
-  copy:
-    src: "{{project_working_directory}}/COMP90024-2019S1-Team7/config/GitHub"
-    dest: /home/ubuntu/.ssh/GitHub
-    owner: ubuntu
-    group: ubuntu
-    mode: 0600
-# copy GitHub private key to server
 
-- name: configure ssh to use ansible key for github.com
-  template:
-    src: "{{project_working_directory}}/COMP90024-2019S1-Team7/config/ssh_config"
-    dest: /home/ubuntu/.ssh/config
-    owner: ubuntu
-    group: ubuntu
-    mode: 0644
-# configure ssh to use ansible key for github.com
 
-- name: clone source code from git
+- name: Get updated files from git repository
+  become: yes
   git:
-    repo: ssh://git@github.com/HanxunHuangLemonBear/COMP90024-2019S1-Team7.git
-    key_file: /home/ubuntu/.ssh/GitHub
-    dest: '{{ remote_working_directory }}'
+    repo: "https://{{ githubuser | urlencode }}:{{ githubpassword | urlencode }}@github.com/Damonzhl/backend.git"
+    dest: /tmp/backend
+    update: yes
+    force: yes
+
+- name: rm the exiting code
+  tags: 'git'
+  become: yes
+  command: "rm -fr /couchdb/twitterHarvester"
+
+- name: cp code file
+  tags: 'git'
+  become: yes
+  command: "cp -r /tmp/backend/twitterHarvester /couchdb/twitterHarvester"
+
+- name: Run docker compose stop
+  tags: 'git'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose stop"
+
+- name: Run docker compose start
+  tags: 'git'
+  become: yes
+  command: "chdir={{ couchdb_dir }} docker-compose up -d"
+-
+
