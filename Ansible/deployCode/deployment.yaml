@@ -1,0 +1,6 @@
+- hosts: couches
+  vars_files:
+    - host_vars/deployment.yaml
+  gather_facts: false
+  roles:
+    - role: deployment
