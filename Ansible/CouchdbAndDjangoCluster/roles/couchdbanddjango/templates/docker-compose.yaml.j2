@@ -15,10 +15,10 @@ services:
       - "9100-9200:9100-9200"
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:80
+    command: python manage.py runserver 0.0.0.0:8080
     volumes:
        - .:/code
     ports:
-      - "80:80"
+      - "8080:8080"
     depends_on:
       - db
