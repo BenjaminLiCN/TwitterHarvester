@@ -1,4 +1,12 @@
 from django.http import JsonResponse
+from couchdb import Server
+server = Server('http://admin:password@172.26.131.49:5984//')
+db = server['hospital']
+
+#for key_value in db.view('testReduce/new-view',group = True):
+#   print(key_value.key, key_value.value)
+#hospital_json = db['c12415e43341f595eac3f83c5201be97']
+#print(hospital_json)
 def profile(request):
     data = {
         'name': 'Vitor',
@@ -13,3 +21,9 @@ def helloworld(request):
         'name': 'helloword',
     }
     return JsonResponse(data)
+
+def hospital(request):
+    server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['hospital']
+    hospital_json = db['c12415e43341f595eac3f83c5201be97']
+    return JsonResponse(hospital_json)
