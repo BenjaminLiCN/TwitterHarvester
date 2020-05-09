@@ -34,7 +34,7 @@ def hospital(request):
 def school(request):
     server = Server('http://admin:password@172.26.131.49:5984//')
     db = server['school']
-    school_json = db['c12415e43341f595eac3f83c5202033d']
+    school_json = db['c12415e43341f595eac3f83c52025ec3']
     response = JsonResponse(school_json)
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
