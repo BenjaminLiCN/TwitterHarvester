@@ -25,7 +25,7 @@ def helloworld(request):
 def hospital(request):
     server = Server('http://admin:password@172.26.131.49:5984//')
     db = server['hospital']
-    hospital_json = db['c12415e43341f595eac3f83c5201be97']
+    hospital_json = db['c12415e43341f595eac3f83c520250ab']
     response = JsonResponse(hospital_json)
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
