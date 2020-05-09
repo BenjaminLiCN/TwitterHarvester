@@ -17,11 +17,13 @@ from django.contrib import admin
 from django.urls import path
 from .views import profile
 from .views import hospital
+from .views import school
 from .views import helloworld
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', profile, name='profile'),
     path('hospital/', hospital, name='hospital'),
+    path('school/', school, name='school'),
     path('', helloworld, name='helloworld')
 ]
