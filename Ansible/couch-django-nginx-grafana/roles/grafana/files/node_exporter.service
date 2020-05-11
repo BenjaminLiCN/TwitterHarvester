@@ -1,0 +1,13 @@
+[Unit]
+Description=node_exporter
+Documentation=https://prometheus.io/
+After=network.target
+
+[Service]
+Type=simple
+User=prometheus
+ExecStart=/usr/local/node_exporter/node_exporter --web.listen-address=":9010"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
