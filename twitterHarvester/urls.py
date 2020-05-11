@@ -19,11 +19,13 @@ from .views import profile
 from .views import hospital
 from .views import school
 from .views import helloworld
+from .views import confirmed
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', profile, name='profile'),
     path('hospital/', hospital, name='hospital'),
     path('school/', school, name='school'),
+    path('confirmed/', confirmed, name='confirmed'),
     path('', helloworld, name='helloworld')
 ]

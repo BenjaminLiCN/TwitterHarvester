@@ -39,3 +39,12 @@ def school(request):
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
     return response
+
+def confirmed(request):
+    server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['confirmed']
+    school_json = db['0510']
+    response = JsonResponse(school_json)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
