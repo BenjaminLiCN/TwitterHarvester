@@ -20,6 +20,7 @@ from .views import hospital
 from .views import school
 from .views import helloworld
 from .views import confirmed
+from .views import confirmedAll
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,5 +28,6 @@ urlpatterns = [
     path('hospital/', hospital, name='hospital'),
     path('school/', school, name='school'),
     path('confirmed/', confirmed, name='confirmed'),
+    path('confirmedAll/', confirmedAll, name='confirmedAll'),
     path('', helloworld, name='helloworld')
 ]
