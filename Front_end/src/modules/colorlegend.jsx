@@ -3,9 +3,18 @@ import {Typography} from "@material-ui/core";
 
 
 class Colorlegend extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            type: 'cases'
+        }
+    }
     render() {
         return (
             <div>
+
+                <Typography variant={'caption'}>{this.state.type}</Typography>
 
                 <div style={{display: 'flex'}}>
                     <div style={{width: '10px', height: '10px', backgroundColor: '#b71c1c'}}></div>

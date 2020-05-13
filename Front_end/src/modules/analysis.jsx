@@ -1,39 +1,64 @@
 import React , { Component } from 'react';
-import {ContinuousColorLegend} from "react-vis";
-import {Typography} from "@material-ui/core";
 import '../../node_modules/react-vis/dist/style.css';
-import {XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries} from 'react-vis';
-
+import {XYPlot, XAxis, YAxis,LineSeries} from 'react-vis';
+import {date} from '../modules/scale'
 
 class Analysis extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+            suburbCases:[],
+            loaded:false,
+        };
+    }
+   async componentDidMount() {
+
+/*        await fetch('http://172.26.131.49:8081/confirmedAll/')
+            .then(res=>res.json())
+            .then(data=>{
+                console.log('suburbcases'+data)
+                let t=[]
+                for(const x of date){
+                    data[x].map(d=>{
+                        t[d.Suburb][]=
+                    })
+                }
+                t.push(data)
+
+                console.log('cases0 '+this.state.allcases['0404'][0].cases)
+                this.setState({loaded: true})
+            }).catch(console.log)*/
+    }
+
     render() {
-        const data = [
-            {x: 0, y: 8},
-            {x: 1, y: 5},
-            {x: 2, y: 4},
-            {x: 3, y: 9},
-            {x: 4, y: 1},
-            {x: 5, y: 7},
-            {x: 6, y: 6},
-            {x: 7, y: 3},
-            {x: 8, y: 2},
-            {x: 9, y: 0}
+        const timestamp = new Date('April 4 2020').getTime();
+        const ONE_DAY = 86400000;
+
+        const cases = [
+            {x: '0404', y: 8},
+            {x: '0405', y: 5},
+            {x: '0406', y: 4},
         ];
-        return (
+        const mood=[
+            {x: '0404', y: 0.2},
+            {x: '0405', y: 0.7},
+            {x: '0406', y: -0.3},
+        ];
+        return(
             <div>
+                {this.state.loaded===true&&<div style={{marginTop:'150px'}}>
                 <XYPlot
-                    width={1000}
-                    height={1000}>
-                    <HorizontalGridLines />
-                    <LineSeries
-                        data={[
-                            {x: 1, y: 10},
-                            {x: 2, y: 5},
-                            {x: 3, y: 15}
-                        ]}/>
-                    <XAxis />
+                    width={1200}
+                    height={600}
+                    xType="ordinal"
+
+                >
+                    <LineSeries data={cases}/>
+                    <LineSeries data={cases}/>
+                    <XAxis title={'Date'}/>
                     <YAxis />
                 </XYPlot>
+            </div>}
             </div>
         );
     }
