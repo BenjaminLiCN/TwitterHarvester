@@ -22,8 +22,10 @@ const theme = createMuiTheme({
                 fontWeight: 600,
                 textAlign: "center"
             },
-            p: {
-                color: '#FFFFFF'
+            caption: {
+                frontSize:10,
+                frontWeight:200,
+                color: 'white'
             }
 
         }

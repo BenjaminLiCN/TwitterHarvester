@@ -21,7 +21,7 @@ class innerMap extends Component {
 
 
     componentDidUpdate() {
-        this.props.changeBorder(this.state.map)
+
     }
 
     componentDidMount() {

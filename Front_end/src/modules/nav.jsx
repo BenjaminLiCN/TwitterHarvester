@@ -19,8 +19,8 @@ class Nav extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 0
-        };
+            value: 0}
+        ;
     }
 
     handleChange = (event, value) => {
@@ -31,6 +31,7 @@ class Nav extends Component {
 
         const {value} = this.state;
         const {classes}= this.props;
+
 
         return (
             <div>
