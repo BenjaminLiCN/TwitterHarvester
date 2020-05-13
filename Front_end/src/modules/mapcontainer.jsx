@@ -7,9 +7,15 @@ import {PieChart} from 'react-chartkick'
 import 'chart.js'
 import Echart from './Echart'
 import MarkerClusterer from 'node-js-marker-clusterer';
+import Colorlegend from "./colorlegend";
+
+import { ContinuousColorLegend,SearchableDiscreteColorLegend } from "react-vis";
+import { Bullet } from '@nivo/bullet'
 
 
 import {colorOnConfirmed} from '../methods/defineColor'
+
+
 
 import mapStyles from '../resources/mapstyle.json';
 import InnerMap from './innermap';
@@ -38,7 +44,7 @@ class MapContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            month: 1,
+            month: 4,
             hospital_location:[],
             school_location:[],
             hospitals: [],
@@ -46,10 +52,13 @@ class MapContainer extends Component {
             toiletpapers:[],
             discriminations:[],
             cities:[],
-            showHospital: true,
-            showSchool: true,
+            confirm:[{Suburb:'aa',cases:46}],
+            allcases:'false',
+            showHospital: false,
+            showSchool: false,
             showHotTopic: false,
             clearStyle:false,
+            loaded: false,
             map:null,
             bottom:'100px',
             left:'20px',
@@ -67,8 +76,9 @@ class MapContainer extends Component {
         this.initHotTopicMarkers = this.initHotTopicMarkers.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
 
+/*
         fetch('http://172.26.131.49:8081/hospital/')
             .then(res=>res.json())
             .then(data=>{
@@ -76,7 +86,6 @@ class MapContainer extends Component {
                 console.log(data.doc)
             }).catch(console.log)
 
-        console.log('didh'+this.state.hospital_location)
 
         fetch('http://172.26.131.49:8081/school/')
             .then(res=>res.json())
@@ -84,8 +93,26 @@ class MapContainer extends Component {
                 this.setState({school_location:data.doc})
                 console.log(data.doc)
             }).catch(console.log)
+*/
 
-        console.log('dids'+this.state.school_location)
+
+/*        await fetch('http://172.26.131.49:8081/confirmed/')
+            .then(res=>res.json())
+            .then(data=>{
+                this.setState({confirm:data.doc.map(c=>({Suburb:c.Suburb,cases:c.cases}))})
+                console.log('confirm'+data.doc)
+                console.log('cases0 '+this.state.confirm[0].cases)
+                this.setState({loaded: true})
+            }).catch(console.log)*/
+
+        await fetch('http://172.26.131.49:8081/confirmedAll/')
+            .then(res=>res.json())
+            .then(data=>{
+                this.setState({allcases:data})
+                console.log('confirmm'+data)
+                console.log('cases0 '+this.state.allcases['0404'][0].cases)
+                this.setState({loaded: true})
+            }).catch(console.log)
 
 
     }
@@ -94,8 +121,17 @@ class MapContainer extends Component {
 
         const that= this;
 
-        map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/3')
 
+        map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
+        //map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/3')
+      /*  map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')//nsw
+        map.data.loadGeoJson('https://data.gov.au/geoserver/act-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_83468f0c_313d_4354_9592_289554eb2dc9&outputFormat=json')
+       // map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/wa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_5c00d495_21ba_452d_ae46_1ad0ca05e41f&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/tas-state-boundary/wfs?request=GetFeature&typeName=ckan_cf2ebc53_1633_4c5c_b892_bfc3945d913b&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/sa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_8f996b8c_d939_4757_a231_3fec8cb8e929&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/nt-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_5162e11c_3259_4894_8b9e_f44540b6cb11&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/qld-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_2dbbec1a_99a2_4ee5_8806_53bc41d038a7&outputFormat=json')*/
 
         map.data.addListener('mouseover', function (event) {
             map.data.overrideStyle(event.feature, {
@@ -105,7 +141,8 @@ class MapContainer extends Component {
             });
             if(map.zoom>5 && (map.getCenter().lat()>-40&&map.getCenter().lat()<-30)&&(map.getCenter().lng()>135&&map.getCenter().lng()<150)) {
                 console.log("load vic")
-                map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
+                //map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
+               // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
                 that.setState({show:"none"});
             }
 
@@ -127,14 +164,24 @@ class MapContainer extends Component {
                 that.setState({angry: event.feature.getProperty('ANGRY_3')})
                 that.setState({fear: event.feature.getProperty('FEAR_3')})
             }
+
+            var name=event.feature.getProperty('vic_lga__3')
+
             if(that.state.month ===4 )
-                that.setState({cases: event.feature.getProperty('CONFIRMED_4')})
+                var day = that.state.allcases['0407']
             else if(that.state.month ===3 )
-                that.setState({cases: event.feature.getProperty('CONFIRMED_3')})
+                var day = that.state.allcases['0414']
             else if(that.state.month ===2 )
-                that.setState({cases: event.feature.getProperty('CONFIRMED_2')})
+                var day = that.state.allcases['0429']
             else
-                that.setState({cases:'0'})
+                var day = that.state.allcases['0501']
+
+            for(var x of day)
+            {
+                console.log('suburb cases'+x.Suburb+x.cases)
+                if(x.Suburb===name)
+                    that.setState( {cases:x.cases})
+            }
 
         });
 
@@ -191,9 +238,8 @@ class MapContainer extends Component {
 
         });
 
-        this.initHospitalMarkers(map)
-        this.initSchoolMarkers(map)
-        this.initCitiesMarkers(map)
+
+
         this.changeBorder(map)
 
         // this.setState({map:map})
@@ -203,19 +249,31 @@ class MapContainer extends Component {
     changeBorder(map) {
 
         const month = this.state.month;
+        const that= this;
 
         map.data.setStyle(function (feature) {
-            var cases = feature.getProperty('CONFIRMED');
-            if (month === 2)
-                cases = feature.getProperty('CONFIRMED_2');
-            if (month === 3)
-                cases = feature.getProperty('CONFIRMED_3');
-            if (month === 4)
-                cases = feature.getProperty('CONFIRMED_4');
-            if(feature.getProperty("Sortname")=="Melbourne") {
-                cases = 2
+
+        var name=feature.getProperty('vic_lga__3')
+        var cases=0
+
+        if(that.state.month ===4 )
+            var day = that.state.allcases['0407']
+        else if(that.state.month ===3 )
+            var day = that.state.allcases['0414']
+        else if(that.state.month ===2 )
+            var day = that.state.allcases['0429']
+        else
+            var day = that.state.allcases['0501']
+
+            for(var x of day)
+            {
+                //console.log('name'+x.Suburb)
+                if(x.Suburb===name)
+                     cases=x.cases
             }
+
             let color=colorOnConfirmed(cases);
+
             return {
                 fillColor: color,
                 strokeWeight: 0.3,
@@ -409,15 +467,18 @@ class MapContainer extends Component {
                 {
                     const {classes} = this.props;
 
+                    //if(this.state.loaded===true)
+
                     return (
                         <div>
+                            {this.state.loaded===true&&
                             <div className={classes.mapContainer}>
                                 < InnerMap id="map"
                                            options={{center: {lat: -25.5, lng: 132.5}, zoom: 5, styles: mapStyles}}
                                            onMapLoad={(map) => this.initBorder(map)
-                                           } changeBorder={this.changeBorder}
-                                />
-                            </div>
+                                           } changeBorder={this.changeBorder}/>
+
+                            </div>  }
 
   {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
                                 <Checkbox
@@ -459,6 +520,9 @@ class MapContainer extends Component {
                                 <PieChart data={[["happy", this.state.happy], ["Sad", this.state.sad],["Angry", this.state.angry],["Fear", this.state.fear]]} />
 
                             </div>
+                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '60px'}}>
+                            <Colorlegend/>
+                            </div>
 
                             <div style={{display:'flex', position: 'absolute',bottom: '100px', left: '20px'}}>
                                 <Checkbox
@@ -470,12 +534,34 @@ class MapContainer extends Component {
                                 </p>
                             </div>
 
+                           {/* <FormControl>
+                                <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+                                    Area
+                                </InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-placeholder-label-label"
+                                    id="demo-simple-select-placeholder-label"
+                                    value={area}
+                                    onChange={handleSelectChange}
+                                    displayEmpty
+                                    className={classes.selectEmpty}
+                                >
+                                    <MenuItem value="">
+                                        <em>State</em>
+                                    </MenuItem>
+                                    <MenuItem value={10}>Suburb</MenuItem>
+                                    <MenuItem value={20}>Cities</MenuItem>
+                                </Select>
+                                <FormHelperText>Area Select</FormHelperText>
+                            </FormControl>*/}
+
+
                             <div style={{position: 'absolute', bottom: '20px', left: '30px', width: '700px'}}>
                                 <p style={{color:'#FFFFFF'}}>
                                     Month
                                 </p>
                                 <Slider
-                                    defaultValue={1}
+                                    defaultValue={4}
                                     aria-labelledby="discrete-slider"
                                     valueLabelDisplay="auto"
                                     step={1}
@@ -486,11 +572,13 @@ class MapContainer extends Component {
                                 />
                             </div>
 
-                            <div></div>
+
+
 
                         </div>
-
                     )
+                   /* else
+                        return (<div>loading...</div>)*/
                 }
             }
 

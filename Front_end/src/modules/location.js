@@ -10638,5 +10638,5 @@ export const toiletpapers = [{lat: -25.363, lng: 122.044}, {lat: -27.363, lng: 1
 
 export const discriminations = [{lat: -23.363, lng: 135.044}];
 
-export const cities = [{lat: -23.363, lng: 135.044}];
+export const cities = [{lat: -37.840935, lng: 144.946457},{lat: -33.865143, lng: 151.209900},{lat: -27.470125, lng: 153.021072},{lat: -35.343784, lng: 149.082977}];
 

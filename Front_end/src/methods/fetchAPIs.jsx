@@ -7,3 +7,4 @@ export const fetchHospitals = () => {
         .catch(error => console.log(error))
 
 }
+

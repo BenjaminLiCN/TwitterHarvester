@@ -1,23 +1,23 @@
 export const colorOnConfirmed=(cases)=>{
-    let color = "#FCA78F"
+    let color = "#ffebee"
     if(cases>1)
-        color="#F88665"
-    if(cases>5)
-        color = "#F77A56"
-    if (cases > 30)
-        color = "#F96E46"
+        color="#ffcdd2"
+    if(cases>3)
+        color="#ef9a9a"
+    if(cases>10)
+        color = "#e57373"
+    if (cases > 20)
+        color = "#ef5350"
+    if (cases > 50)
+        color = "#f44336"
     if (cases > 100)
-        color = "#FD6336"
+        color = "#e53935"
     if (cases > 200)
-        color = "#F95D30"
+        color = "#d32f2f"
     if (cases > 500)
-        color = "#FA5121"
-    if (cases > 800)
-        color = "#FB4A18"
+        color = "#c62828"
     if (cases > 1000)
-        color = "#FC4714"
-    if (cases > 2000)
-        color = "#FA3903"
+        color = "#b71c1c"
     return color;
 
 }
