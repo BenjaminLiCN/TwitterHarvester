@@ -2,11 +2,9 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from couchdb import Server
 
-server = Server('http://admin:password@172.26.131.49:5984//')
-db = server['gov_geo_data']
 
-
-def get_all_suburbs():
+def get_all_suburbs(server):
+    db = server['gov_geo_data']
     data = db['VIC_Local_Gov_Area']
     result = {}
     for feature in data['features']:
@@ -16,11 +14,10 @@ def get_all_suburbs():
     return result
 
 
-def find_suburb(lo, la):
-    allSuburbs = get_all_suburbs()  # dictionary "suburb":boundaries
+def find_suburb(point, server):
+    allSuburbs = get_all_suburbs(server)  # dictionary "suburb":boundaries
     # print('Length : %d' % len(allSuburbs))
     # print(allSuburbs.keys())
-    point = Point(lo, la)
     for sub in allSuburbs:
         boundaries = []
         for coordinates in allSuburbs[sub]:
