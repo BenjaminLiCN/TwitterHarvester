@@ -44,7 +44,7 @@ class MapContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            month: 4,
+            month: 3,
             hospital_location:[],
             school_location:[],
             hospitals: [],
@@ -52,6 +52,7 @@ class MapContainer extends Component {
             toiletpapers:[],
             discriminations:[],
             cities:[],
+            scale: 'state',
             confirm:[{Suburb:'aa',cases:46}],
             allcases:'false',
             showHospital: false,
@@ -121,9 +122,8 @@ class MapContainer extends Component {
 
         const that= this;
 
-
-        map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
-        //map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/3')
+        map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
+     //   map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
       /*  map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')//nsw
         map.data.loadGeoJson('https://data.gov.au/geoserver/act-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_83468f0c_313d_4354_9592_289554eb2dc9&outputFormat=json')
        // map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
@@ -135,13 +135,14 @@ class MapContainer extends Component {
 
         map.data.addListener('mouseover', function (event) {
             map.data.overrideStyle(event.feature, {
-                fillColor: '#ff9999',
+                fillColor: '#ff8a80',
                 strokeWeight: 8,
-                fillOpacity: 0.9
+                fillOpacity: 0.6
             });
             if(map.zoom>5 && (map.getCenter().lat()>-40&&map.getCenter().lat()<-30)&&(map.getCenter().lng()>135&&map.getCenter().lng()<150)) {
                 console.log("load vic")
-                //map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
+                that.setState({scale:'suburb'})
+                map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
                // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
                 that.setState({show:"none"});
             }
@@ -165,23 +166,39 @@ class MapContainer extends Component {
                 that.setState({fear: event.feature.getProperty('FEAR_3')})
             }
 
-            var name=event.feature.getProperty('vic_lga__3')
+            if(that.state.scale==='suburb}') {
 
-            if(that.state.month ===4 )
-                var day = that.state.allcases['0407']
-            else if(that.state.month ===3 )
-                var day = that.state.allcases['0414']
-            else if(that.state.month ===2 )
-                var day = that.state.allcases['0429']
-            else
-                var day = that.state.allcases['0501']
+                var name = event.feature.getProperty('vic_lga__3')
 
-            for(var x of day)
-            {
-                console.log('suburb cases'+x.Suburb+x.cases)
-                if(x.Suburb===name)
-                    that.setState( {cases:x.cases})
+                if (that.state.month === 4)
+                    var day = that.state.allcases['0407']
+                else if (that.state.month === 3)
+                    var day = that.state.allcases['0414']
+                else if (that.state.month === 2)
+                    var day = that.state.allcases['0429']
+                else
+                    var day = that.state.allcases['0501']
+
+                for (var x of day) {
+                    if (x.Suburb === name)
+                        that.setState({cases: x.cases})
+                }
             }
+
+                if(that.state.month ===4 )
+                    that.setState({cases: event.feature.getProperty('CONFIRMED_4')})
+                else if(that.state.month ===3 )
+                    that.setState({cases: event.feature.getProperty('CONFIRMED_3')})
+                else if(that.state.month ===2 )
+                    that.setState({cases: event.feature.getProperty('CONFIRMED_2')})
+                else
+                    that.setState({cases:'0'})
+
+                console.log("mouseovercase"+that.state.cases)
+
+
+
+
 
         });
 
@@ -248,29 +265,43 @@ class MapContainer extends Component {
 
     changeBorder(map) {
 
-        const month = this.state.month;
         const that= this;
 
         map.data.setStyle(function (feature) {
 
-        var name=feature.getProperty('vic_lga__3')
-        var cases=0
 
-        if(that.state.month ===4 )
-            var day = that.state.allcases['0407']
-        else if(that.state.month ===3 )
-            var day = that.state.allcases['0414']
-        else if(that.state.month ===2 )
-            var day = that.state.allcases['0429']
-        else
-            var day = that.state.allcases['0501']
 
-            for(var x of day)
-            {
-                //console.log('name'+x.Suburb)
-                if(x.Suburb===name)
-                     cases=x.cases
+               var cases = feature.getProperty('CONFIRMED');
+               console.log("m" + that.state.month)
+               if (that.state.month === 2){
+                   console.log("this is 2")
+                   cases = feature.getProperty('CONFIRMED_2');}
+               else if (that.state.month === 3)
+                   cases = feature.getProperty('CONFIRMED_3');
+               else if (that.state.month === 4)
+                   cases = feature.getProperty('CONFIRMED_4');
+
+               console.log("casess"+cases)
+
+            if(that.state.scale==='suburb}') {
+                var name=feature.getProperty('vic_lga__3')
+                if (that.stae.month === 4)
+                    var day = that.state.allcases['0407']
+                else if (that.state.month === 3)
+                    var day = that.state.allcases['0414']
+                else if (that.state.month === 2)
+                    var day = that.state.allcases['0429']
+                else
+                    var day = that.state.allcases['0501']
+
+                for (var x of day) {
+                    // console.log('suburb cases'+x.Suburb+x.cases)
+                    if (x.Suburb === name)
+                        cases = x.cases
+                }
             }
+
+
 
             let color=colorOnConfirmed(cases);
 
@@ -282,7 +313,7 @@ class MapContainer extends Component {
             };
         });
 
-        // this.setState({map:map})
+         this.setState({map:map})
 
     }
     initCitiesMarkers(map){
@@ -378,7 +409,7 @@ class MapContainer extends Component {
 
     }
 
-    MonthChange = (event, value) => {
+    DateChange = (event, value) => {
 
         this.setState({
             month: value
@@ -387,8 +418,10 @@ class MapContainer extends Component {
         if(this.state.showHotTopic)
              this.initHotTopicMarkers(this.state.map);
 
-        console.log("month: " + this.state.month);
-        if (value === 4)
+        this.changeBorder(this.state.map)
+
+        console.log("set month to: " + value);
+/*        if (value === 4)
                 this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
         else if (value === 3)
                 this.state.discriminations.map(discrimination => discrimination.setMap(null))
@@ -396,9 +429,7 @@ class MapContainer extends Component {
             {
                 this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
                 this.state.discriminations.map(discrimination => discrimination.setMap(null))
-            }
-
-
+            }*/
 
     };
 
@@ -471,14 +502,13 @@ class MapContainer extends Component {
 
                     return (
                         <div>
-                            {this.state.loaded===true&&
                             <div className={classes.mapContainer}>
                                 < InnerMap id="map"
                                            options={{center: {lat: -25.5, lng: 132.5}, zoom: 5, styles: mapStyles}}
                                            onMapLoad={(map) => this.initBorder(map)
                                            } changeBorder={this.changeBorder}/>
 
-                            </div>  }
+                            </div>
 
   {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
                                 <Checkbox
@@ -558,17 +588,17 @@ class MapContainer extends Component {
 
                             <div style={{position: 'absolute', bottom: '20px', left: '30px', width: '700px'}}>
                                 <p style={{color:'#FFFFFF'}}>
-                                    Month
+                                    Date
                                 </p>
                                 <Slider
-                                    defaultValue={4}
+                                    defaultValue={2}
                                     aria-labelledby="discrete-slider"
                                     valueLabelDisplay="auto"
                                     step={1}
                                     marks={true}
                                     min={1}
                                     max={4}
-                                    onChange={this.MonthChange}
+                                    onChange={this.DateChange}
                                 />
                             </div>
 
