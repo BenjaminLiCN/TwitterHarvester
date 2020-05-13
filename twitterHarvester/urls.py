@@ -21,6 +21,7 @@ from .views import school
 from .views import helloworld
 from .views import confirmed
 from .views import confirmedAll
+from .views import confirmedAllState
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +30,6 @@ urlpatterns = [
     path('school/', school, name='school'),
     path('confirmed/', confirmed, name='confirmed'),
     path('confirmedAll/', confirmedAll, name='confirmedAll'),
+    path('confirmedAllState/', confirmedAllState, name='confirmedAllState'),
     path('', helloworld, name='helloworld')
 ]

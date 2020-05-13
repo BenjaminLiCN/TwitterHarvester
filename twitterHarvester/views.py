@@ -59,3 +59,14 @@ def confirmedAll(request):
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
     return response
+
+def confirmedAllState(request):
+    server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['state_confirmed']
+    result = {}
+    for key_value in db.view('state_confirmed/state-confirmed-view', group=False):
+        result[key_value.key] = key_value.value['doc']
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
