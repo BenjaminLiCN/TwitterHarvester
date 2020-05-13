@@ -1,0 +1,51 @@
+---
+- name: copy environment folder to coordinator
+  become: yes
+  copy:
+    src: environment
+    dest: "{{ grafana_path }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+  
+- name: remove previous containers
+  become: yes
+  shell: |
+    docker stop environment_prometheus_1
+    docker rm environment_prometheus_1
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+  ignore_errors: yes
+    
+- name: run grafana on coordinator
+  become: yes
+  shell: |
+    cd environment
+    docker-compose up -d
+  args:
+    chdir: "{{ grafana_path }}"
+  when: inventory_hostname == "{{ groups.couches[0] }}"
+  ignore_errors: yes
+  
+- name: copy node_exporter service file to each host
+  become: yes
+  copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    
+- name: enable node_exporter on each host
+  become: yes
+  shell: |
+    cd /usr/local/src/
+    wget https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-amd64.tar.gz
+    tar -zxvf node_exporter-0.15.1.linux-amd64.tar.gz -C /usr/local/
+    cd /usr/local/
+    mv node_exporter-0.15.1.linux-amd64/ node_exporter/
+    groupadd prometheus
+    useradd -g prometheus -s /sbin/nologin prometheus
+    chown -R prometheus:prometheus /usr/local/node_exporter/
+    systemctl enable node_exporter
+    systemctl start node_exporter
+    
+    
