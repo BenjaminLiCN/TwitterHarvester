@@ -1,9 +1,8 @@
+import couchdb
 from tweepy import Cursor
 import json
 import numpy
 import pandas
-# import appendDataFromCrawler
-import couchdb
 from couchdb import Server
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from shapely.geometry import Point
