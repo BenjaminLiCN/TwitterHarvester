@@ -9,7 +9,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 server = Server('http://admin:password@172.26.131.49:5984//')
-to_db = server['test_chuangw_du']
+to_db = server['test_chuangw']
 gov_data_db = server['gov_geo_data']
 
 
@@ -111,9 +111,9 @@ def tweets_cleaning(fresh_tweets):
     for items in fresh_tweets:
         if 'retweeted_status' in items._json:
             text.append('RT @' + items._json['retweeted_status']['user']['screen_name'] + ': ' +
-                        items._json['retweeted_status']['text'])
+                        items._json['retweeted_status']['full_text'])
         else:
-            text.append(items.text)
+            text.append(items.full_text)
         hashTag = []
         hashTag.extend([item['text'] for item in items.entities['hashtags']])  # organize hashtags
         hashTag = list(set(hashTag))
@@ -140,6 +140,7 @@ def tweets_cleaning(fresh_tweets):
         tweet_coord = tweets['doc']['Coordinates']['coordinates']
         tweet_point = Point(tweet_coord[0], tweet_coord[1])
 
+        print("id: {}".format(tweets['_id']))
         # add date, emotion, suburb, state to doc
         tweets['doc']['date'] = dict(year=int(tweet_time[0]), month=int(tweet_time[1]), day=int(tweet_time[2]))
         tweets['doc']['state'] = find_state(tweet_point)

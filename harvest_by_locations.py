@@ -32,7 +32,7 @@ class Harvest_by_location:
         count = 0
         while True:
             fresh_tweets = self.api.search(q='*', geocode=self.location, lang="en", count=tweets_per_query,
-                                           max_id=max_id)
+                                           max_id=max_id, tweet_mode='extended')
             if fresh_tweets:
                 max_id = fresh_tweets[-1].id - 1  # update max_id to harvester earlier data
                 # print(fresh_tweets[-1].created_at)
