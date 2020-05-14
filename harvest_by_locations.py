@@ -3,7 +3,7 @@ import sys
 from tweepy import OAuthHandler, AppAuthHandler, API
 
 from developer_keys_tokens import config
-from save_tweets import save_tweets
+import save_tweets
 
 
 class TwitterAuthendication:
@@ -37,10 +37,10 @@ class Harvest_by_location:
                 #print(fresh_tweets[-1].created_at)
                 #for item in fresh_tweets:
                      #tweets.append(item._json)
-                valid_tweets = save_tweets().tweets_cleaning(fresh_tweets)
+                valid_tweets = save_tweets.tweets_cleaning(fresh_tweets)
                 # if dataframe.shape[0]!=0:
                 #     count += dataframe.shape[0]
-                save_tweets().save_search_tweets(valid_tweets)
+                save_tweets.save_search_tweets(valid_tweets)
             #print(tweets)
             if not fresh_tweets:
                 break
