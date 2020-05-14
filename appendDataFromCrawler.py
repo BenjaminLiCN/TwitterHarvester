@@ -1,11 +1,11 @@
+import couchdb
 from couchdb import Server
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 server = Server('http://admin:password@172.26.131.49:5984//')
-from_db = server['twitter']
-to_db = server['twitter_data']
+to_db = server['test_chuangw_du']
 gov_data_db = server['gov_geo_data']
 
 sentiment_analyser = SentimentIntensityAnalyzer()
@@ -89,25 +89,25 @@ print(find_state(Point(115.10287, -33.85094)))
 #######################################################################################################################
 #                     Helper function for add_to_new_db
 #######################################################################################################################
-def append_data(db_doc):
-    tweet = db_doc['doc']
+def append_data(record):
+    tweet = record['doc']
     # tweet data
     tweet_txt = tweet['Tweets']
     tweet_time = tweet['Time'].replace('T', '-').split('-')
     tweet_coord = tweet['Coordinates']['coordinates']
     tweet_point = Point(tweet_coord[0], tweet_coord[1])
 
-    # add date to doc
+    # add date, emotion, suburb, state to doc
     tweet_date = dict(year=int(tweet_time[0]), month=int(tweet_time[1]), day=int(tweet_time[2]))
-    tweet_emotion = get_emotion_val(tweet_txt)
-    tweet_suburb = find_suburb(tweet_point)
     tweet_state = find_state(tweet_point)
+    tweet_suburb = find_suburb(tweet_point)
+    tweet_emotion = get_emotion_val(tweet_txt)
 
     # append data to tweet doc
     tweet.update(date=tweet_date, state=tweet_state, suburb=tweet_suburb, emotion=tweet_emotion)
 
     # add _id to the document
-    result = dict(_id=db_doc['_id'], doc=tweet)
+    result = dict(_id=record['_id'], doc=tweet)
 
     return result
 
@@ -117,17 +117,14 @@ def get_emotion_val(sentence):
     return snt['compound']
 
 
-def add_to_new_db():
-    for doc_id in from_db:
-        # a document in the db
-        db_doc = from_db[doc_id]
+def add_to_db(tweets):
+    for tweet in tweets:
+        try:
+            # update the tweet by appending data(date, state, suburb, emotion)
+            appended_tweet = append_data(tweet)
 
-        # update the record by appending data(date, state, suburb, emotion)
-        new_doc = append_data(db_doc)
+            # save to the new database
+            to_db.save(appended_tweet)
 
-        # print(new_doc)
-        # save to the new database
-        to_db.save(new_doc)
-
-
-add_to_new_db()
+        except couchdb.http.ResourceConflict as e1:
+            continue
