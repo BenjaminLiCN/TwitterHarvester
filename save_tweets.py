@@ -40,8 +40,6 @@ def tweets_cleaning(fresh_tweets):
         tweets['doc']['Location'] = fresh_tweets[item].user.location
         tweets['doc']['Coordinates'] = fresh_tweets[item].coordinates
         final.append(tweets)
-        # Insert surburb处理
-        # Insert sentiment analysis on tweets['doc']['Tweets']
     return final
 
 
