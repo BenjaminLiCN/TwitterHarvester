@@ -106,7 +106,6 @@ def tweets_cleaning(fresh_tweets):
     # new_dataframe = pandas.DataFrame()
     text = []
     hashtag = []
-    hashTag = []
     final = []
     # organize retweets by extracting useful info
     for items in fresh_tweets:
@@ -115,7 +114,9 @@ def tweets_cleaning(fresh_tweets):
                         items._json['retweeted_status']['text'])
         else:
             text.append(items.text)
-        hashTag.extend([items._json['text']] for item in items.entities['hashtags'])  # organize hashtags
+        hashTag = []
+        hashTag.extend([item['text'] for item in items.entities['hashtags']])  # organize hashtags
+        hashTag = list(set(hashTag))
         hashtag.append(hashTag)
     for item in range(len(fresh_tweets)):
         if not fresh_tweets[item].coordinates:
