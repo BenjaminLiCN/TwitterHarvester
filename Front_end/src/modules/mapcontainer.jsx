@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM from "react-dom";
 import ReactDOMServer from 'react-dom/server';
-import Button from '@material-ui/core/Button';
+import {Paper} from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Checkbox} from "@material-ui/core";
@@ -11,13 +11,30 @@ import Echart from './Echart'
 import MarkerClusterer from 'node-js-marker-clusterer';
 import Colorlegend from "./colorlegend";
 
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import clsx from 'clsx';
 import { ContinuousColorLegend,SearchableDiscreteColorLegend } from "react-vis";
 import { Bullet } from '@nivo/bullet'
 
-
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import DirectionsIcon from '@material-ui/icons/Directions';
 import {colorOnConfirmed} from '../methods/defineColor'
 
-
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import mapStyles from '../resources/mapstyle.json';
 import InnerMap from './innermap';
@@ -41,7 +58,62 @@ const styles = theme => ({
         width: "100%",
         height: "846px",
         boxShadow: "0 2px 8px 0 #d7d7d7"
-    }
+    },
+    searchPanel: {
+        display: 'flex',
+        flexWrap: 'wrap',
+
+        '& > *': {
+            margin: theme.spacing(1),
+            width: theme.spacing(300),
+            height: theme.spacing(16),
+        },
+        width:theme.spacing(50),
+        height:theme.spacing(100),
+        position: 'fixed',
+        top: '30%',
+        left: '60%',
+    },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+    },
+    secondaryHeading: {
+        fontSize: theme.typography.pxToRem(15),
+        color: theme.palette.text.secondary,
+    },
+    icon: {
+        verticalAlign: 'bottom',
+        height: 20,
+        width: 20,
+    },
+    details: {
+        alignItems: 'center',
+    },
+    column: {
+        flexBasis: '50.00%',
+    },
+    helper: {
+        borderLeft: `2px solid ${theme.palette.divider}`,
+        padding: theme.spacing(1, 2),
+    },
+    link: {
+        color: theme.palette.primary.main,
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+        },
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    iconButton: {
+        padding: 10,
+    },
+    divider: {
+        height: 28,
+        margin: 4,
+    },
 })
 
 //1.20 人传人确定 1.23 武汉封城 1.31 global emergency declared 2.1澳洲禁止中国 3.7 toilet paper 3.11 europe new epiccentre
@@ -134,6 +206,8 @@ const AirbnbSlider = withStyles({
 function valuetext(value) {
     return `Date: ${value}`;
 }
+
+
 function AirbnbThumbComponent(props) {
     return (
         <span {...props}>
@@ -184,7 +258,10 @@ class MapContainer extends Component {
             sad:7,
             angry:8,
             fear:2,
-            setOpen:false
+            setOpen:false,
+            opacity: '30%',
+            level: 3,
+            searchText: '',
         };
         this.initBorder = this.initBorder.bind(this)
         this.changeBorder = this.changeBorder.bind(this);
@@ -193,7 +270,26 @@ class MapContainer extends Component {
         this.initHotTopicMarkers = this.initHotTopicMarkers.bind(this);
     }
 
+    handleLevel = (event) => {
+        this.setState({level: event.target.value});
+    }
 
+    handleSearchText = (event) => {
+        this.setState({searchText: event.target.value});
+    }
+
+    focusSearchArea = () => {
+        let text = this.state.searchText;
+        //todo: auto focus
+    }
+
+    onHoverSearch = () => {
+        this.setState({opacity: '100%'});
+    }
+
+    onLeaveSearch = () => {
+        this.setState({opacity: '30%'});
+    }
 
     handleClick = () => {
         this.setState({setOpen:true});
@@ -649,7 +745,62 @@ class MapContainer extends Component {
                                            } changeBorder={this.changeBorder}/>
 
                             </div>
+                            <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
+                                <Paper elevation={3} >
+                                    <ExpansionPanel>
+                                        <ExpansionPanelSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1c-content"
+                                            id="panel1c-header"
+                                        >
+                                            <div className={classes.column}>
+                                                <Typography className={classes.heading}>Search</Typography>
+                                            </div>
+                                            <div className={classes.column}>
+                                                <Typography className={classes.secondaryHeading}>Expand</Typography>
+                                            </div>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails className={classes.details}>
+                                            <div style={{flex: 2}}>
+                                                <FormControl component="fieldset">
+                                                    <InputLabel id="demo-simple-select-label">Level</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={this.state.level}
+                                                        onChange={this.handleLevel}
+                                                    >
+                                                        <MenuItem value={1}>State</MenuItem>
+                                                        <MenuItem value={2}>City</MenuItem>
+                                                        <MenuItem value={3}>Suburb</MenuItem>
+                                                    </Select>
+                                                </FormControl>
 
+                                            </div>
+                                            <div style={{flex: 5}}>
+                                                <FormControl component="fieldset">
+                                                    <div style={{flexDirection: 'row'}}>
+                                                    <InputBase
+                                                        className={classes.input}
+                                                        placeholder="Enter location name"
+                                                        inputProps={{ 'aria-label': 'search location' }}
+                                                        onChange={this.handleSearchText}
+                                                    />
+
+                                                    </div>
+                                                </FormControl>
+                                            </div>
+                                        </ExpansionPanelDetails>
+                                        <Divider />
+                                        <ExpansionPanelActions>
+                                            <Button size="small">Cancel</Button>
+                                            <IconButton type="submit" className={classes.iconButton} aria-label="search" onClick={this.focusSearchArea}>
+                                                <SearchIcon />
+                                            </IconButton>
+                                        </ExpansionPanelActions>
+                                    </ExpansionPanel>
+                                </Paper>
+                            </div>
   {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.clearStyle}
@@ -724,7 +875,6 @@ class MapContainer extends Component {
                                 </Select>
                                 <FormHelperText>Area Select</FormHelperText>
                             </FormControl>*/}
-
 
                             <div style={{position: 'absolute', bottom: '-20px', left: '30px', width: '700px'}}>
                                 {/*<p style={{color:'#FFFFFF'}}>*/}
