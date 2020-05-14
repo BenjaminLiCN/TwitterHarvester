@@ -90,3 +90,25 @@ def suburbAndEmotion(request):
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
     return response
+
+
+def suburbAndHottopic(request):
+    server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['twitter_data']
+    result = {}
+    resultlist = []
+
+    for key_value in db.view('hottopic/hottopic-view', group=True):
+        single_result = {}
+        single_result['date'] = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
+        single_result['suburb'] = key_value.key[0]
+        single_result['word'] = key_value.key[2]
+        single_result['num'] = key_value.value
+        resultlist.append(single_result)
+    result['doc'] = resultlist
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
+
+
