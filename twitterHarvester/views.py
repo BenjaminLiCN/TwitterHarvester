@@ -70,3 +70,23 @@ def confirmedAllState(request):
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
     return response
+
+def suburbAndEmotion(request):
+    server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['twitter_data']
+    result = {}
+    resultlist = []
+
+    for key_value in db.view('state/suburb-view', group=True):
+        single_result = {}
+        single_result['date'] = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
+        single_result['state'] = key_value.key[0]
+        single_result['suburb'] = key_value.key[1]
+        single_result['emotion'] = key_value.key[3]
+        single_result['num'] = key_value.value
+        resultlist.append(single_result)
+    result['doc'] = resultlist
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
