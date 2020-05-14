@@ -5,7 +5,7 @@ import numpy
 import pandas
 from couchdb import Server
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPolygon
 from shapely.geometry.polygon import Polygon
 
 server = Server('http://admin:password@172.26.131.49:5984//')
@@ -46,38 +46,20 @@ def find_suburb(point):
 #######################################################################################################################
 #                     given a coordinate, identify the state
 #######################################################################################################################
-
-def generate_allPolygons(coords):
-    polygons = []
-    for coord in coords:
-        points = []
-        for c in coord:
-            for i in c:
-                if isinstance(i, list):
-                    points.append((i[0], i[1]))
-        polygons.append(Polygon(points))
-    return polygons
+def load_states_polygons():
+    data = gov_data_db['AU_States_Polygons']['doc']
+    states = {}
+    for key in data:
+        states[key] = MultiPolygon(data[key])
+    return states
 
 
-def get_all_states():
-    data = gov_data_db['AU_States_Geo_Data']
-    all_states = {}
-    for feature in data['features']:
-        state = feature['properties']['STATE_NAME']
-        polygons = generate_allPolygons(feature['geometry']['coordinates'])
-        all_states[state] = polygons
-    return all_states
-
-
-all_states = get_all_states()
+states_polygons = load_states_polygons()
 
 
 def find_state(point):
-    # all_states: dictionary "state":multi polygons
-    # print('Length : %d' % len(all_states))
-    for state in all_states:
-        polygons = all_states[state]
-        for polygon in polygons:
+    for state in states_polygons:
+        for polygon in states_polygons[state]:
             if polygon.contains(point):
                 return state
     return None
