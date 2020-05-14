@@ -9,7 +9,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 server = Server('http://admin:password@172.26.131.49:5984//')
-to_db = server['test_chuangw']
+to_db = server['all_tweets']
 gov_data_db = server['gov_geo_data']
 
 
