@@ -1,15 +1,15 @@
 import json
 from couchdb import Server
 
-fileName = 'states.geojson'
+fileName = '/Users/frank/Library/Mobile Documents/com~apple~CloudDocs/Master_Of_Software/2020_Sem1/COMP90024_CCC/assignment/assignment2/VIC_State_Boundary.json'
 
-server = Server('http://admin:password@172.26.131.49:5984//')
-# db = server['test_chuangw_du']
-
+# server = Server('http://admin:password@172.26.131.49:5984//')
+# db = server['gov_geo_data']
+#
 # def write_to_db(filename):
 #     with open(filename, 'r', encoding='utf-8') as file_obj:
 #         data = json.load(file_obj)
-#         data.update(_id="AU_States_Geo_Data")
+#         data.update(_id="VIC_State_Boundary")
 #         db.save(data)
 #
 #
