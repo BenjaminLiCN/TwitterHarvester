@@ -2,5 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ansible/couch-django-nginx-grafana/roles/grafana/files/environment" vcs="Git" />
   </component>
 </project>

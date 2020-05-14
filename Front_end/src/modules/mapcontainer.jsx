@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import ReactDOM from "react-dom";
 import ReactDOMServer from 'react-dom/server';
-
-import {withStyles, Typography,Checkbox,Slider} from "@material-ui/core";
+import Button from '@material-ui/core/Button';
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
+import {Checkbox} from "@material-ui/core";
 import {PieChart} from 'react-chartkick'
 import 'chart.js'
 import Echart from './Echart'
@@ -26,7 +28,10 @@ import toiletpaper_marker from '../resources/toiletpaper_marker.png'
 import discrimination_marker from '../resources/discrimination_marker.png'
 
 import {fetchHospitals} from '../methods/fetchAPIs'
-
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Slider from '@material-ui/core/Slider';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 const styles = theme => ({
     map: {
         width: '100%',
@@ -39,11 +44,121 @@ const styles = theme => ({
     }
 })
 
+//1.20 人传人确定 1.23 武汉封城 1.31 global emergency declared 2.1澳洲禁止中国 3.7 toilet paper 3.11 europe new epiccentre
+//3.15 aus 14-day qarantine for oversea returners 3.20 australia lockdown 3.23 aus cafes shutdown  3.30 victoria stage 3
+//5.13 stage 3 eased
+const keyDates = [
+    {value: 18, info: "human-to-human transmission confirmed"},
+    {value: 24, info: "Wuhan lockdown started"},
+    {value: 28, info: "global emergency declared"},
+    {value: 35, info: "travel ban issued for Chinese nationals"},
+    {value: 64, info: "toilet paper crisis in Australia"},
+    {value: 72, info: "Europe became new epicentre"},
+    {value: 79, info: "14-day quarantine needed for returners from overseas"},
+    {value: 84, info: "Australia closed its borders"},
+    {value: 86, info: "cafes shutdown"},
+    {value: 93, info: "stage 3 restrictions in place in Victoria"},
+    {value: 120, info: "restrictions lifted in Victoria"},
+];
+
+const marks = [
+    {
+        value: 0,
+        label: '01/01',
+    },
+    {
+        value: 27,
+        label: '29/01',
+    },
+    {
+        value: 58,
+        label: '29/02',
+    },
+    {
+        value: 83,
+        label: '29/03',
+    },
+    {
+        value: 110,
+        label: '01/05',
+    },
+    {
+        value: 120,
+        label: '13/05',
+    }
+];
+const AirbnbSlider = withStyles({
+    root: {
+        color: '#52af77',
+        height: 8,
+    },
+    thumb: {
+        height: 27,
+        width: 27,
+        backgroundColor: '#fff',
+        border: '1px solid currentColor',
+        marginTop: -12,
+        marginLeft: -13,
+        boxShadow: '#ebebeb 0px 2px 2px',
+        '&:focus, &:hover, &$active': {
+            boxShadow: '#ccc 0px 2px 3px 1px',
+        },
+        '& .bar': {
+            // display: inline-block !important;
+            height: 9,
+            width: 1,
+            backgroundColor: 'currentColor',
+            marginLeft: 1,
+            marginRight: 1,
+        },
+    },
+    active: {},
+    track: {
+        height: 8,
+        borderRadius: 4,
+    },
+    rail: {
+        height: 8,
+        borderRadius: 4,
+    },
+    markLabel: {
+        color: 'grey'
+    },
+    markLabelActive: {
+        color: '#fff'
+    },
+    valueLabel: {
+        left: 'calc(-50% + 4px)',
+    },
+})(Slider);
+function valuetext(value) {
+    return `Date: ${value}`;
+}
+function AirbnbThumbComponent(props) {
+    return (
+        <span {...props}>
+      <span className="bar" />
+      <span className="bar" />
+    </span>
+    );
+}
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 class MapContainer extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            dateInfo: {
+                month: 1,
+                week: 1,
+                day: 1
+            },
+            showKeyDate: false,
+            keyDateText: '',
             month: 3,
             hospital_location:[],
             school_location:[],
@@ -68,7 +183,8 @@ class MapContainer extends Component {
             happy:5,
             sad:7,
             angry:8,
-            fear:2
+            fear:2,
+            setOpen:false
         };
         this.initBorder = this.initBorder.bind(this)
         this.changeBorder = this.changeBorder.bind(this);
@@ -77,6 +193,19 @@ class MapContainer extends Component {
         this.initHotTopicMarkers = this.initHotTopicMarkers.bind(this);
     }
 
+
+
+    handleClick = () => {
+        this.setState({setOpen:true});
+    };
+
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({setOpen:false});
+        this.setState({showKeyDate:false});
+    };
     async componentDidMount() {
 
 /*
@@ -412,9 +541,19 @@ class MapContainer extends Component {
     DateChange = (event, value) => {
 
         this.setState({
-            month: value
+            dateInfo: {
+                month: value / 30 + 1,
+                week: value / 7 + 1,
+                day: value
+            }
         });
 
+        for (let day = 0; day < keyDates.length; day++) {
+            if (keyDates[day].value === value) {
+                this.handleClick();
+                this.setState({showKeyDate: true, keyDateText: keyDates[day].info})
+            }
+        }
         if(this.state.showHotTopic)
              this.initHotTopicMarkers(this.state.map);
 
@@ -493,6 +632,7 @@ class MapContainer extends Component {
         console.log("toilet paper"+this.state.toiletpapers)
 
     };
+
 
                 render()
                 {
@@ -586,20 +726,43 @@ class MapContainer extends Component {
                             </FormControl>*/}
 
 
-                            <div style={{position: 'absolute', bottom: '20px', left: '30px', width: '700px'}}>
-                                <p style={{color:'#FFFFFF'}}>
-                                    Date
-                                </p>
-                                <Slider
-                                    defaultValue={2}
-                                    aria-labelledby="discrete-slider"
-                                    valueLabelDisplay="auto"
-                                    step={1}
-                                    marks={true}
-                                    min={1}
-                                    max={4}
+                            <div style={{position: 'absolute', bottom: '-20px', left: '30px', width: '700px'}}>
+                                {/*<p style={{color:'#FFFFFF'}}>*/}
+                                {/*    Date*/}
+                                {/*</p>*/}
+
+                                {/*<Slider*/}
+                                {/*    defaultValue={2}*/}
+                                {/*    aria-labelledby="discrete-slider"*/}
+                                {/*    valueLabelDisplay="auto"*/}
+                                {/*    step={1}*/}
+                                {/*    marks={true}*/}
+                                {/*    min={1}*/}
+                                {/*    max={4}*/}
+                                {/*    onChange={this.DateChange}*/}
+                                {/*/>*/}
+                                <Typography style={{color:'#FFFFFF'}} id="discrete-slider-always" gutterBottom>
+                                    Date selection
+                                </Typography>
+                                <AirbnbSlider
+                                    getAriaValueText={valuetext}
+                                    aria-labelledby="discrete-slider-always"
+                                    ThumbComponent={AirbnbThumbComponent}
+                                    marks={marks}
+                                    defaultValue={0}
+                                    valueLabelDisplay="on"
                                     onChange={this.DateChange}
+                                    max={120}
                                 />
+                                <div style={{
+                                    backgroundColor: '#fff'
+                                }}>
+                                    <Snackbar open={this.state.setOpen} autoHideDuration={6000} onClose={this.handleClose}>
+                                        <Alert onClose={this.handleClose} severity="warning">
+                                            {this.state.keyDateText}
+                                        </Alert>
+                                    </Snackbar>
+                                </div>
                             </div>
 
 
