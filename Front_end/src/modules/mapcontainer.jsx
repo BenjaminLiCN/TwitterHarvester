@@ -1,23 +1,40 @@
 import React, {Component} from 'react';
 import ReactDOM from "react-dom";
 import ReactDOMServer from 'react-dom/server';
-import Button from '@material-ui/core/Button';
+import {Paper,Button} from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Checkbox} from "@material-ui/core";
 import {PieChart} from 'react-chartkick'
 import 'chart.js'
-import Echart from './Echart'
 import MarkerClusterer from 'node-js-marker-clusterer';
 import Colorlegend from "./colorlegend";
+import {stateCaseDate,suburbCaseDate,searchSuburb,searchState,searchState2} from "../modules/scale"
 
-import { ContinuousColorLegend,SearchableDiscreteColorLegend } from "react-vis";
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
+import clsx from 'clsx';
+import { ContinuousColorLegend,SearchableDiscreteColorLegend, RadialChart} from "react-vis";
 import { Bullet } from '@nivo/bullet'
 
-
+import InputBase from '@material-ui/core/InputBase';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import DirectionsIcon from '@material-ui/icons/Directions';
 import {colorOnConfirmed} from '../methods/defineColor'
+import {dayFromStr,monthFromStr,dayFromValue,strFromDate} from '../methods/DateTransfer'
 
-
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import mapStyles from '../resources/mapstyle.json';
 import InnerMap from './innermap';
@@ -35,13 +52,68 @@ import Tooltip from '@material-ui/core/Tooltip';
 const styles = theme => ({
     map: {
         width: '100%',
-        height: "846px"
+        height: '100%'
     },
     mapContainer: {
         width: "100%",
-        height: "846px",
+        height: "900px",
         boxShadow: "0 2px 8px 0 #d7d7d7"
-    }
+    },
+    searchPanel: {
+        display: 'flex',
+        flexWrap: 'wrap',
+
+        '& > *': {
+            margin: theme.spacing(1),
+            width: theme.spacing(300),
+            height: theme.spacing(16),
+        },
+        width:theme.spacing(50),
+        height:theme.spacing(100),
+        position: 'fixed',
+        top: '30%',
+        left: '60%',
+    },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+    },
+    secondaryHeading: {
+        fontSize: theme.typography.pxToRem(15),
+        color: theme.palette.text.secondary,
+    },
+    icon: {
+        verticalAlign: 'bottom',
+        height: 20,
+        width: 20,
+    },
+    details: {
+        alignItems: 'center',
+    },
+    column: {
+        flexBasis: '50.00%',
+    },
+    helper: {
+        borderLeft: `2px solid ${theme.palette.divider}`,
+        padding: theme.spacing(1, 2),
+    },
+    link: {
+        color: theme.palette.primary.main,
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+        },
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    iconButton: {
+        padding: 10,
+    },
+    divider: {
+        height: 28,
+        margin: 4,
+    },
 })
 
 //1.20 人传人确定 1.23 武汉封城 1.31 global emergency declared 2.1澳洲禁止中国 3.7 toilet paper 3.11 europe new epiccentre
@@ -89,7 +161,7 @@ const marks = [
 ];
 const AirbnbSlider = withStyles({
     root: {
-        color: '#52af77',
+        color: '#7268A6',
         height: 8,
     },
     thumb: {
@@ -101,7 +173,7 @@ const AirbnbSlider = withStyles({
         marginLeft: -13,
         boxShadow: '#ebebeb 0px 2px 2px',
         '&:focus, &:hover, &$active': {
-            boxShadow: '#ccc 0px 2px 3px 1px',
+            boxShadow: '#ccc 0px 2px 2px 1px',
         },
         '& .bar': {
             // display: inline-block !important;
@@ -115,7 +187,7 @@ const AirbnbSlider = withStyles({
     active: {},
     track: {
         height: 8,
-        borderRadius: 4,
+        //borderRadius: 4,
     },
     rail: {
         height: 8,
@@ -157,9 +229,13 @@ class MapContainer extends Component {
                 week: 1,
                 day: 1
             },
+            emotionInfo: {
+                positive: 0,
+                middle: 0,
+                negative: 0
+            },
             showKeyDate: false,
             keyDateText: '',
-            month: 3,
             hospital_location:[],
             school_location:[],
             hospitals: [],
@@ -169,7 +245,9 @@ class MapContainer extends Component {
             cities:[],
             scale: 'state',
             confirm:[{Suburb:'aa',cases:46}],
-            allcases:'false',
+            suburbcases:'false',
+            statecases:'false',
+            suburbemotions:'false',
             showHospital: false,
             showSchool: false,
             showHotTopic: false,
@@ -184,7 +262,10 @@ class MapContainer extends Component {
             sad:7,
             angry:8,
             fear:2,
-            setOpen:false
+            setOpen:false,
+            opacity: '30%',
+            level: 3,
+            searchText: '',
         };
         this.initBorder = this.initBorder.bind(this)
         this.changeBorder = this.changeBorder.bind(this);
@@ -193,7 +274,26 @@ class MapContainer extends Component {
         this.initHotTopicMarkers = this.initHotTopicMarkers.bind(this);
     }
 
+    handleLevel = (event) => {
+        this.setState({level: event.target.value});
+    }
 
+    handleSearchText = (event) => {
+        this.setState({searchText: event.target.value});
+    }
+
+    focusSearchArea = () => {
+        let text = this.state.searchText;
+        //todo: auto focus
+    }
+
+    onHoverSearch = () => {
+        this.setState({opacity: '100%'});
+    }
+
+    onLeaveSearch = () => {
+        this.setState({opacity: '30%'});
+    }
 
     handleClick = () => {
         this.setState({setOpen:true});
@@ -234,16 +334,26 @@ class MapContainer extends Component {
                 console.log('cases0 '+this.state.confirm[0].cases)
                 this.setState({loaded: true})
             }).catch(console.log)*/
+        await fetch('http://172.26.131.49:8081/confirmedAllState/')
+            .then(res=>res.json())
+            .then(data=>{
+                this.setState({statecases:data})
+            }).catch(console.log)
 
         await fetch('http://172.26.131.49:8081/confirmedAll/')
             .then(res=>res.json())
             .then(data=>{
-                this.setState({allcases:data})
-                console.log('confirmm'+data)
-                console.log('cases0 '+this.state.allcases['0404'][0].cases)
-                this.setState({loaded: true})
+                this.setState({suburbcases:data})
             }).catch(console.log)
 
+        await fetch('http://172.26.131.49:8081/suburbAndEmotion/')
+            .then(res=>res.json())
+            .then(data=>{
+                this.setState({suburbemotions:data.doc})
+                console.log('emotions'+data)
+                console.log('emotion 0 '+this.state.suburbemotions[0].num)
+                this.setState({loaded: true})
+            }).catch(console.log)
 
     }
 
@@ -252,10 +362,10 @@ class MapContainer extends Component {
         const that= this;
 
         map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
-     //   map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
-      /*  map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')//nsw
+         //  map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
+       /* map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/act-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_83468f0c_313d_4354_9592_289554eb2dc9&outputFormat=json')
-       // map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/wa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_5c00d495_21ba_452d_ae46_1ad0ca05e41f&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/tas-state-boundary/wfs?request=GetFeature&typeName=ckan_cf2ebc53_1633_4c5c_b892_bfc3945d913b&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/sa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_8f996b8c_d939_4757_a231_3fec8cb8e929&outputFormat=json')
@@ -275,61 +385,49 @@ class MapContainer extends Component {
                // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
                 that.setState({show:"none"});
             }
-
-
-
-            if(that.state.month===4)
+            else
             {
-                const happy= 'HAPPY_4'
-                that.setState({happy: event.feature.getProperty(happy)})
-                that.setState({sad: event.feature.getProperty('SAD_4')})
-                that.setState({angry: event.feature.getProperty('ANGRY_4')})
-                that.setState({fear: event.feature.getProperty('FEAR_4')})
-                console.log("fear")
-            }
-            else if(that.state.month===3)
-            {
-                that.setState({happy: event.feature.getProperty('HAPPY_3')})
-                that.setState({sad: event.feature.getProperty('SAD_3')})
-                that.setState({angry: event.feature.getProperty('ANGRY_3')})
-                that.setState({fear: event.feature.getProperty('FEAR_3')})
-            }
-
-            if(that.state.scale==='suburb}') {
-
-                var name = event.feature.getProperty('vic_lga__3')
-
-                if (that.state.month === 4)
-                    var day = that.state.allcases['0407']
-                else if (that.state.month === 3)
-                    var day = that.state.allcases['0414']
-                else if (that.state.month === 2)
-                    var day = that.state.allcases['0429']
-                else
-                    var day = that.state.allcases['0501']
-
-                for (var x of day) {
-                    if (x.Suburb === name)
-                        that.setState({cases: x.cases})
+                if(that.state.scale==='suburb')
+                {
+                    map.data.setStyle({})
+                    that.setState({scale:'state'})
+                    map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
                 }
             }
 
-                if(that.state.month ===4 )
-                    that.setState({cases: event.feature.getProperty('CONFIRMED_4')})
-                else if(that.state.month ===3 )
-                    that.setState({cases: event.feature.getProperty('CONFIRMED_3')})
-                else if(that.state.month ===2 )
-                    that.setState({cases: event.feature.getProperty('CONFIRMED_2')})
-                else
-                    that.setState({cases:'0'})
 
-                console.log("mouseovercase"+that.state.cases)
+            console.log("scale= "+that.state.scale)
 
+            if(that.state.scale==='suburb') {
 
+                if(suburbCaseDate.includes(strFromDate(that.state.dateInfo.month,that.state.dateInfo.day)))
+                {
+                    try {
+                        var suburbname = event.feature.getProperty('vic_lga__3')
+                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                        var suburbindex = searchSuburb.get(suburbname)
+                        that.setState({cases: that.state.suburbcases[datestr][suburbindex].cases})
+                    }catch (e) {
+                        console.log(e)
+                    }
+                }
+            }
 
+        else if(that.state.scale==='state') {
 
-
+                if (stateCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
+                   try {
+                       var statename = event.feature.getProperty('STATE_NAME')
+                       var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                       var stateindex = searchState2.get(statename)
+                       that.setState({cases: that.state.statecases[datestr][stateindex].cases})
+                   } catch (e) {
+                       console.log(e)
+                   }
+                }
+            }
         });
+
 
         map.data.addListener('mouseout', function () {
             map.data.revertStyle();
@@ -344,6 +442,7 @@ class MapContainer extends Component {
 
                 </div>
             );
+            console.log("month" + that.state.dateInfo.month+"day"+ that.state.dateInfo.day)
 
 
             console.log("zoom:"+map.getZoom())
@@ -398,38 +497,39 @@ class MapContainer extends Component {
 
         map.data.setStyle(function (feature) {
 
+            var cases = 0
+            if(that.state.scale==='state') {
 
+                if (stateCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
+                    try {
+                        var statename = feature.getProperty('STATE_NAME')
+                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                        var stateindex = searchState2.get(statename)
+                        cases = that.state.statecases[datestr][stateindex].cases
+                    }catch (e) {
+                        console.log(e)
+                    }
 
-               var cases = feature.getProperty('CONFIRMED');
-               console.log("m" + that.state.month)
-               if (that.state.month === 2){
-                   console.log("this is 2")
-                   cases = feature.getProperty('CONFIRMED_2');}
-               else if (that.state.month === 3)
-                   cases = feature.getProperty('CONFIRMED_3');
-               else if (that.state.month === 4)
-                   cases = feature.getProperty('CONFIRMED_4');
-
-               console.log("casess"+cases)
-
-            if(that.state.scale==='suburb}') {
-                var name=feature.getProperty('vic_lga__3')
-                if (that.stae.month === 4)
-                    var day = that.state.allcases['0407']
-                else if (that.state.month === 3)
-                    var day = that.state.allcases['0414']
-                else if (that.state.month === 2)
-                    var day = that.state.allcases['0429']
-                else
-                    var day = that.state.allcases['0501']
-
-                for (var x of day) {
-                    // console.log('suburb cases'+x.Suburb+x.cases)
-                    if (x.Suburb === name)
-                        cases = x.cases
                 }
             }
 
+            else if(that.state.scale==='suburb') {
+
+                if(suburbCaseDate.includes(strFromDate(that.state.dateInfo.month,that.state.dateInfo.day)))
+                {
+                    try {
+                        var suburbname = feature.getProperty('vic_lga__3')
+                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                        var suburbindex = searchSuburb.get(suburbname)
+                        cases = that.state.suburbcases[datestr][suburbindex].cases
+                    }catch (e) {
+                        console.log(e)
+                    }
+                }
+
+            }
+
+            console.log("cases for color rending: " + cases)
 
 
             let color=colorOnConfirmed(cases);
@@ -542,9 +642,9 @@ class MapContainer extends Component {
 
         this.setState({
             dateInfo: {
-                month: value / 30 + 1,
-                week: value / 7 + 1,
-                day: value
+                month: Math.floor(value / 30) + 1,
+                week: Math.floor(value / 7) + 1,
+                day: dayFromValue(value)
             }
         });
 
@@ -559,7 +659,6 @@ class MapContainer extends Component {
 
         this.changeBorder(this.state.map)
 
-        console.log("set month to: " + value);
 /*        if (value === 4)
                 this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
         else if (value === 3)
@@ -633,7 +732,6 @@ class MapContainer extends Component {
 
     };
 
-
                 render()
                 {
                     const {classes} = this.props;
@@ -648,9 +746,64 @@ class MapContainer extends Component {
                                            onMapLoad={(map) => this.initBorder(map)
                                            } changeBorder={this.changeBorder}/>
 
-                            </div>
+                </div>
+{/*                <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
+                    <Paper elevation={3} >
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1c-content"
+                                id="panel1c-header"
+                            >
+                                <div className={classes.column}>
+                                    <Typography className={classes.heading}>Search</Typography>
+                                </div>
+                                <div className={classes.column}>
+                                    <Typography className={classes.secondaryHeading}>Expand</Typography>
+                                </div>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails className={classes.details}>
+                                <div style={{flex: 2}}>
+                                    <FormControl component="fieldset">
+                                        <InputLabel id="demo-simple-select-label">Level</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={this.state.level}
+                                            onChange={this.handleLevel}
+                                        >
+                                            <MenuItem value={1}>State</MenuItem>
+                                            <MenuItem value={2}>City</MenuItem>
+                                            <MenuItem value={3}>Suburb</MenuItem>
+                                        </Select>
+                                    </FormControl>
 
-  {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
+                                </div>
+                                <div style={{flex: 5}}>
+                                    <FormControl component="fieldset">
+                                        <div style={{flexDirection: 'row'}}>
+                                            <InputBase
+                                                className={classes.input}
+                                                placeholder="Enter location name"
+                                                inputProps={{ 'aria-label': 'search location' }}
+                                                onChange={this.handleSearchText}
+                                            />
+
+                                        </div>
+                                    </FormControl>
+                                </div>
+                            </ExpansionPanelDetails>
+                            <Divider />
+                            <ExpansionPanelActions>
+                                <Button size="small">Cancel</Button>
+                                <IconButton type="submit" className={classes.iconButton} aria-label="search" onClick={this.focusSearchArea}>
+                                    <SearchIcon />
+                                </IconButton>
+                            </ExpansionPanelActions>
+                        </ExpansionPanel>
+                    </Paper>
+                </div>*/}
+                {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.clearStyle}
                                     onChange={this.styleChange}
@@ -662,7 +815,7 @@ class MapContainer extends Component {
 
 
 
-                            <div style={{display:'flex', position: 'absolute',bottom: '180px', left: '20px'}}>
+{/*                            <div style={{display:'flex', position: 'absolute',bottom: '180px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.showHotTopic}
                                     onChange={this.HotTopicCheckboxChange}
@@ -682,18 +835,6 @@ class MapContainer extends Component {
                                 </p>
                             </div>
 
-                            <div style={{width:"150px", height:"50px", display:this.state.show,position: 'absolute',bottom:this.state.bottom, left: this.state.left}}>
-                                <div>
-                                    <p>cases: {this.state.cases}</p><br/>
-                                    <p>tweets: {parseInt(this.state.happy)+parseInt(this.state.sad)+parseInt(this.state.angry)+parseInt(this.state.fear)}</p><br/>
-                                </div>
-                                <PieChart data={[["happy", this.state.happy], ["Sad", this.state.sad],["Angry", this.state.angry],["Fear", this.state.fear]]} />
-
-                            </div>
-                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '60px'}}>
-                            <Colorlegend/>
-                            </div>
-
                             <div style={{display:'flex', position: 'absolute',bottom: '100px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.showSchool}
@@ -702,7 +843,26 @@ class MapContainer extends Component {
                                 <p style={{color:'#FFFFFF'}}>
                                     School
                                 </p>
+                            </div>*/}
+
+                            <div style={{width:"150px", height:"50px", display:this.state.show,position: 'absolute',bottom:this.state.bottom, left: this.state.left}}>
+                                <div>
+                                    <p>cases: {this.state.cases}</p><br/>
+                                    <p>tweets: {parseInt(this.state.happy)+parseInt(this.state.sad)+parseInt(this.state.angry)+parseInt(this.state.fear)}</p><br/>
+                                </div>
+                                <PieChart data={[["happy", this.state.happy], ["Sad", this.state.sad],["Angry", this.state.angry],["Fear", this.state.fear]]} />
+
+                                <RadialChart
+                                    data={[{angle: 1}, {angle: 5}, {angle: 2}]}
+                                    width={300}
+                                    height={300} />
+
                             </div>
+                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '70px'}}>
+                            <Colorlegend/>
+                            </div>
+
+
 
                            {/* <FormControl>
                                 <InputLabel shrink id="demo-simple-select-placeholder-label-label">
@@ -726,21 +886,8 @@ class MapContainer extends Component {
                             </FormControl>*/}
 
 
-                            <div style={{position: 'absolute', bottom: '-20px', left: '30px', width: '700px'}}>
-                                {/*<p style={{color:'#FFFFFF'}}>*/}
-                                {/*    Date*/}
-                                {/*</p>*/}
+                            <div style={{position: 'absolute', bottom: '60px', left: '30px', width: '700px'}}>
 
-                                {/*<Slider*/}
-                                {/*    defaultValue={2}*/}
-                                {/*    aria-labelledby="discrete-slider"*/}
-                                {/*    valueLabelDisplay="auto"*/}
-                                {/*    step={1}*/}
-                                {/*    marks={true}*/}
-                                {/*    min={1}*/}
-                                {/*    max={4}*/}
-                                {/*    onChange={this.DateChange}*/}
-                                {/*/>*/}
                                 <Typography style={{color:'#FFFFFF'}} id="discrete-slider-always" gutterBottom>
                                     Date selection
                                 </Typography>

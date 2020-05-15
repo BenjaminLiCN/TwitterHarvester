@@ -61,7 +61,7 @@ class Team extends Component {
                                 name={"Wei Lin"}
                                 role={"Front-end Developer"}
                                 Introduction={["Front-end development and data visualization", "Wei Lin is a Master of Information Technology student, she had working experience as a product manager in company and tech teams."
-                                    , " https://www.linkedin.com/in/wei-lin-894238b7/"]}
+                                    /*, " https://www.linkedin.com/in/wei-lin-894238b7/"*/]}
                             />
                         </Grid>
                         <Grid md={6} lg={4}/>

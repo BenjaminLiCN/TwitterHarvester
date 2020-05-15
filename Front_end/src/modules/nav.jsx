@@ -19,13 +19,31 @@ class Nav extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 0}
+            value: 0,
+            statecases: false,
+            suburbcases: false
+        }
         ;
     }
 
     handleChange = (event, value) => {
         this.setState({value});
     };
+
+    async componentWillMount() {
+       await fetch('http://172.26.131.49:8081/confirmedAllState/')
+            .then(res => res.json())
+            .then(statedata => {
+                this.setState({statecases: statedata})
+            }).catch(console.log)
+
+
+       await fetch('http://172.26.131.49:8081/confirmedAll/')
+            .then(res => res.json())
+            .then(suburbdata => {
+                this.setState({suburbcases: suburbdata})
+            }).catch(console.log)
+    }
 
     render() {
 
@@ -54,7 +72,7 @@ class Nav extends Component {
                 </div>
                 {value === 0 && <MapContainer/>}
                 {value === 1 && <Summary/>}
-                {value === 2 && <Analysis/>}
+                {value === 2 && <Analysis statecases={this.state.statecases} suburbcases={this.state.suburbcases}/>}
                 {value === 3 && <Team/>}
             </div>
         )
