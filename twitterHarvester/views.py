@@ -73,19 +73,41 @@ def confirmedAllState(request):
 
 def suburbAndEmotion(request):
     server = Server('http://admin:password@172.26.131.49:5984//')
-    db = server['twitter_data']
+    db = server['all_tweets']
     result = {}
     resultlist = []
-
+    doc = {}
+    dateDict = {}
     for key_value in db.view('state/suburb-view', group=True):
         single_result = {}
-        single_result['date'] = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
-        single_result['state'] = key_value.key[0]
-        single_result['suburb'] = key_value.key[1]
-        single_result['emotion'] = key_value.key[3]
-        single_result['num'] = key_value.value
-        resultlist.append(single_result)
-    result['doc'] = resultlist
+        mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
+        suburb = key_value.key[1]
+        if mydate in doc.keys():
+            dateDict = doc[mydate]
+            # print(dateDict)
+            if suburb in dateDict.keys():
+                suburbList = dateDict[suburb]
+                single_result['emotion'] = key_value.key[3]
+                single_result['num'] = key_value.value
+                suburbList.append(single_result)
+                dateDict[suburb] = suburbList
+            else:
+                suburbList = []
+                single_result['emotion'] = key_value.key[3]
+                single_result['num'] = key_value.value
+                suburbList.append(single_result)
+                dateDict[suburb] = suburbList
+            doc[mydate] = dateDict
+        else:
+            suburbList = []
+            single_result['emotion'] = key_value.key[3]
+            single_result['num'] = key_value.value
+            suburbList.append(single_result)
+            dateDict[suburb] = suburbList
+            # dateList = []
+            # dateList.append(dateDict)
+            doc[mydate] = dateDict
+    result['doc'] = doc
     response = JsonResponse(result)
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
@@ -94,18 +116,41 @@ def suburbAndEmotion(request):
 
 def suburbAndHottopic(request):
     server = Server('http://admin:password@172.26.131.49:5984//')
-    db = server['twitter_data']
+    db = server['all_tweets']
     result = {}
     resultlist = []
-
+    doc = {}
+    dateDict = {}
     for key_value in db.view('hottopic/hottopic-view', group=True):
         single_result = {}
-        single_result['date'] = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
-        single_result['suburb'] = key_value.key[0]
-        single_result['word'] = key_value.key[2]
-        single_result['num'] = key_value.value
-        resultlist.append(single_result)
-    result['doc'] = resultlist
+        mydate = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
+        suburb = key_value.key[0]
+        if mydate in doc.keys():
+            dateDict = doc[mydate]
+            # print(dateDict)
+            if suburb in dateDict.keys():
+                suburbList = dateDict[suburb]
+                single_result['word'] = key_value.key[2]
+                single_result['num'] = key_value.value
+                suburbList.append(single_result)
+                dateDict[suburb] = suburbList
+            else:
+                suburbList = []
+                single_result['word'] = key_value.key[2]
+                single_result['num'] = key_value.value
+                suburbList.append(single_result)
+                dateDict[suburb] = suburbList
+            doc[mydate] = dateDict
+        else:
+            suburbList = []
+            single_result['word'] = key_value.key[2]
+            single_result['num'] = key_value.value
+            suburbList.append(single_result)
+            dateDict[suburb] = suburbList
+            # dateList = []
+            # dateList.append(dateDict)
+            doc[mydate] = dateDict
+    result['doc'] = doc
     response = JsonResponse(result)
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
