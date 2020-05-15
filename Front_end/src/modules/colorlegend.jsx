@@ -18,7 +18,7 @@ class Colorlegend extends Component {
 
                 <div style={{display: 'flex'}}>
                     <div style={{width: '10px', height: '10px', backgroundColor: '#b71c1c'}}></div>
-                    <Typography variant={'caption'}>1000-2000</Typography></div>
+                    <Typography variant={'caption'}>>1000</Typography></div>
                 <div style={{display: 'flex'}}>
                     <div style={{width: '10px', height: '10px', backgroundColor: '#c62828'}}></div>
                     <Typography variant={'caption'}>500-1000</Typography></div>
