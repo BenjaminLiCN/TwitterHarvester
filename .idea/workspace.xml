@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1ffe4d33-ed66-4f3d-8758-94b8512ff54a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="1ffe4d33-ed66-4f3d-8758-94b8512ff54a" name="Default Changelist" comment="added slider and alert info window">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Ansible/couch-django-nginx-grafana/roles/grafana/files/environment" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/couch-django-nginx-grafana/roles/grafana/files/environment" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front_end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Front_end/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front_end/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Front_end/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front_end/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Front_end/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Front_end/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Front_end/yarn.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/couch-django-nginx-grafana/roles/grafana/files/environment/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/couch-django-nginx-grafana/roles/grafana/files/environment/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ansible/couch-django-nginx-grafana/roles/grafana/files/environment/prometheus/prometheus.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ansible/couch-django-nginx-grafana/roles/grafana/files/environment/prometheus/prometheus.yml" afterDir="false" />
     </list>
@@ -23,74 +18,57 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.40149626">
-      <split-first>
-        <leaf>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Front_end/package.json">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="585">
-                  <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Front_end/src/modules/nav.jsx">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="116">
-                  <caret line="21" column="20" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1727">
-                  <caret line="160" column="28" selection-start-line="160" selection-start-column="28" selection-end-line="160" selection-end-column="28" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Front_end/node_modules/@material-ui/core/Slider/Slider.d.ts">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="752">
-                  <caret line="53" column="14" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="355">
-                  <caret line="555" column="9" lean-forward="true" selection-start-line="555" selection-start-column="9" selection-end-line="555" selection-end-column="9" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Front_end/package.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="585">
+              <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Front_end/src/modules/nav.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="116">
+              <caret line="21" column="20" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="444">
+              <caret line="282" column="26" selection-start-line="282" selection-start-column="26" selection-end-line="282" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Front_end/node_modules/@material-ui/core/Slider/Slider.d.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="752">
+              <caret line="53" column="14" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>sli</find>
+      <find>paper</find>
+      <find>Paper</find>
+      <find>setSt</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -152,6 +130,15 @@
               <item name="TwitterHarvester" type="b2602c69:ProjectViewProjectNode" />
               <item name="TwitterHarvester" type="462c0819:PsiDirectoryNode" />
               <item name="Front_end" type="462c0819:PsiDirectoryNode" />
+              <item name="node_modules" type="462c0819:PsiDirectoryNode" />
+              <item name="@material-ui" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="Paper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TwitterHarvester" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TwitterHarvester" type="462c0819:PsiDirectoryNode" />
+              <item name="Front_end" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -205,19 +192,19 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1588760251423</updated>
-      <workItem from="1588760252763" duration="14855000" />
+      <workItem from="1588760252763" duration="19102000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14855000" />
+    <option name="totallyTimeSpent" value="19102000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15221988" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25792813" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="TypeScript" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
@@ -238,6 +225,10 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added slider and alert info window" />
+    <option name="LAST_COMMIT_MESSAGE" value="added slider and alert info window" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Front_end/public/index.html">
@@ -274,10 +265,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Front_end/node_modules/@types/react/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="510" column="17" selection-start-line="510" selection-start-column="17" selection-end-line="510" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Front_end/src/modules/mapcontainer.jsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="555" column="9" lean-forward="true" selection-start-line="555" selection-start-column="9" selection-end-line="555" selection-end-column="9" />
+        <state relative-caret-position="444">
+          <caret line="282" column="26" selection-start-line="282" selection-start-column="26" selection-end-line="282" selection-end-column="26" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
