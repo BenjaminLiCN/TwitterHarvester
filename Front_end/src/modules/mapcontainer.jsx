@@ -161,7 +161,7 @@ const marks = [
 ];
 const AirbnbSlider = withStyles({
     root: {
-        color: '#7268A6',
+        color: 'primary',
         height: 8,
     },
     thumb: {
@@ -858,7 +858,7 @@ class MapContainer extends Component {
                                     height={300} />
 
                             </div>
-                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '70px'}}>
+                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '90px'}}>
                             <Colorlegend/>
                             </div>
 

@@ -25,7 +25,7 @@ class innerMap extends Component {
     }
 
     componentDidMount() {
-        if (!window.google) { // if no window.google , we do API call
+        if (!window.google) {
             var scriptElement = document.createElement('script');
             scriptElement.type = 'text/javascript';
             scriptElement.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBlGw4U8ih7EbHYd-eePrtsV3c8QpZ-9fs`;

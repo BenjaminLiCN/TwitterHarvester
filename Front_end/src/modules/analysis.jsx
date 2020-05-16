@@ -1,134 +1,182 @@
-import React, {Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../node_modules/react-vis/dist/style.css';
-import {XYPlot, XAxis, YAxis, LineSeries} from 'react-vis';
+import {XYPlot, XAxis, YAxis, LineSeries,VerticalBarSeries,RadialChart} from 'react-vis';
 import {Button} from "@material-ui/core";
 
-import {searchSuburb, suburbCaseDate, stateCaseDate, suburbName, stateName, searchState} from '../modules/scale'
+import {searchSuburb, suburbCaseDate, stateCaseDate, suburbName, stateName, searchState,vicCases} from '../modules/scale'
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
+import { Line } from 'react-chartjs-2';
 
-class Analysis extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            chartdata: [],
-            statecases:props.statecases,
-            suburbcases: props.suburbcases,
-            scale: 'state',
-            name: 'VIC',
-            loaded: false
-        };
-        this.handleScaleChange = this.handleScaleChange.bind(this);
-        this.handleAreaChange = this.handleAreaChange.bind(this);
-        this.upload = this.upload.bind(this);
-        this.clearState=this.clearState.bind(this);
+
+
+export default function Analysis(props){
+
+    const vicCases=[]
+    const [scale, setScale] = useState('state')
+    const [area, setArea] = useState('VIC')
+    const [casesData, setcasesData] = useState(vicCases)
+
+    const [topicData, settopicData] = useState([])
+    const [date, setDate]=useState('0513')
+    const [loaded, setloaded]=useState(false)
+
+
+    const clearState=()=> {
+        setcasesData([])
     }
 
-    componentDidMount() {
+    useEffect(() => {
+        for (const datestr of stateCaseDate) {
 
-        console.log("3.8 cases .."+this.state.suburbcases['0405'][1].cases)
-        console.log("3.8 cases .."+this.state.suburbcases['0405'][1].Suburb)
-        this.upload()
+            props.statecases[datestr].forEach(day => {
+                    if (day.state === 'VIC') {
+                        var item = {x: datestr, y: day.cases}
+                        vicCases.push(item)
+                    }
+                }
+            )
+        }
+    });
 
-
-    }
-
-    clearState=()=> {
-        this.state.chartdata.length=0   }
-
-
-
-    upload = () => {
+    const upload = (name) => {
         console.log("uploading")
 
-        this.clearState()
+        clearState()
 
         /*for (const datestr of suburbCaseDate) {
 
-            for (const x of this.state.suburbcases[datestr]) {
+            for (const x of props.suburbcases[datestr]) {
                 if (x.Suburb === datestr) {
                     let item = {x: datestr, y: x.cases}
                     //console.log("item x "+item.x+" y "+item.y)
-                    this.setState({chartdata: [...this.state.chartdata, item]})
+                    setcasesData([...casesData, item])
                 }
             }
         }*/
-       if (this.state.scale === 'state') {
+       if (scale === 'state') {
 
            for (const datestr of stateCaseDate) {
 
-               this.state.statecases[datestr].forEach(day => {
-                       if (day.state === this.state.name) {
+               props.statecases[datestr].forEach(day => {
+                       if (day.state === name) {
                            var item = {x: datestr, y: day.cases}
                            //console.log("item x " + item.x + " y " + item.y)
-                           this.state.chartdata.push(item)
-                           this.setState({chartdata:this.state.chartdata})
+                           setcasesData(casesData=>[...casesData, item]);
+                           set
                        }
                    }
                )
            }
-          // this.setState({loaded:true})
+
+           setloaded(true)
+
+
+
        }
-        else if (this.state.scale === 'suburb') {
+        else if (scale === 'suburb') {
 
            for (const datestr of suburbCaseDate) {
 
-               this.state.suburbcases[datestr].forEach(day => {
-                       if (day.suburb === this.state.name) {
+               props.suburbcases[datestr].forEach(day => {
+                       if (day.Suburb === name) {
                            var item = {x: datestr, y: day.cases}
                            console.log("item x " + item.x + " y " + item.y)
-                           this.state.chartdata.push(item)
-                           this.setState({chartdata:this.state.chartdata})
-                       }
+                           setcasesData(casesData=>[...casesData, item]);}
                    }
                )
            }
-        }
+
+
+/*
+           Object.keys(props.suburbtopic).forEach
+           (
+               date=>{
+                   var total=0
+                   Object.keys(props.suburbtopic[date]).forEach
+                   (
+                        suburb=>{
+                           var topic = props.suburbtopic[date][suburb]
+                           topic.map(
+                               (t)=>{
+                                    total+= Number(t.num)
+                           }
+                           )
+                       }
+                   )
+                   var item = {x: date, y: total }
+                   console.log("topics"+ item.x + item.y)
+                   settopicData(topicData=>[...topicData, item]);
+
+               }
+           )
+*/
+
+
+       }
 
     }
 
-    handleScaleChange = (event) => {
-        this.clearState()
-        this.setState({scale: (event.target.value)});
-
-
-    };
-    handleAreaChange = (event) => {
-        console.log("chartdata1 "+this.state.chartdata[1].x)
-        this.clearState()
-
-        this.setState({name: (event.target.value)});
-        this.upload()
+    const handleScaleChange = (event) => {
+        setScale(event.target.value)
     };
 
-    render() {
-        const timestamp = new Date('April 4 2020').getTime();
-        const ONE_DAY = 86400000;
+    const handleAreaChange = (event) => {
+        setArea(event.target.value)
+        upload(event.target.value)
+    };
+
+
+    const timestamp = new Date('April 4 2020').getTime();
+    const ONE_DAY = 86400000;
+    const Data = [
+        {angle: 1}, {angle: 5}, {angle: 2}
+    ]
 
         return (
             <div>
-                <div style={{display: 'flex', marginTop: '200px'}}>
-                    <div>
+                <div style={{display: 'flex', marginTop: '200px',marginLeft:'60px'}}>
+
+                    <div style={{width:'800px',height:'200px'}}>
+                        <Line data={casesData}/>
+                    </div>
+
+
+
+                    {/*<div>
                         <XYPlot
                             width={1200}
-                            height={500}
+                            height={200}
                             xType="ordinal"
                         >
-                            <LineSeries data={this.state.chartdata}/>
-                            <XAxis title={'Date'}/>
+
+                            <LineSeries data={casesData} animation damping={9} stiffness={300} color="#ffcdd2"/>
+                            <VerticalBarSeries data={topicData} animation damping={9} stiffness={300} color="blue"/>
+                            <XAxis title={'Date'} tickLabelAngle={40}/>
                             <YAxis title={'Cases'}/>
                         </XYPlot>
+
+                        { !(casesData && casesData.length) && <Typography>Loading</Typography>}
+
+                    <div style={{marginTop:'60px'}}>
+                        <RadialChart
+                            data={Data}
+                            width={200}
+                            height={200} />
                     </div>
-                    <div>
-                        <FormControl>
+                    </div>*/}
+
+                    <div style={{marginLeft:'20px'}}>
+                    <FormControl>
                             <InputLabel>Scale</InputLabel>
                             <Select
-                                value={this.state.scale}
-                                onChange={this.handleScaleChange}>
-                                <MenuItem value={'state'}>state</MenuItem>
+                                value={scale}
+                                onChange={handleScaleChange}>
                                 <MenuItem value={'suburb'}>suburb</MenuItem>
+                                <MenuItem value={'state'}>state</MenuItem>
                             </Select>
                         </FormControl>
                         <br/>
@@ -136,24 +184,21 @@ class Analysis extends Component {
                         <FormControl>
                             <InputLabel>Area</InputLabel>
                             <Select
-                                value={this.state.name}
-                                onChange={this.handleAreaChange}>
-
-                                {this.state.scale === 'state' &&
+                                value={area}
+                                onChange={handleAreaChange}>
+                                {scale === 'state' &&
                                 stateName.map((key, i) =>
-                                    <MenuItem key={i} value={key}>{key}</MenuItem>)}}
+                                    <MenuItem key={i} value={key}>{key}</MenuItem>)}
 
-                                {this.state.scale === 'suburb' &&
+                                {scale === 'suburb' &&
                                 suburbName.map((key, i) =>
-                                    <MenuItem key={i} value={key}>{key}</MenuItem>)}}
+                                    <MenuItem key={i} value={key}>{key}</MenuItem>)}
                             </Select>
                         </FormControl>
-                    </div>}
+                    </div>
                 </div>
             </div>
         );
-    }
 }
 
-export default Analysis
 

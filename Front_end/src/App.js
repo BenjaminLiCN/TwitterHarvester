@@ -4,6 +4,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import {TransitionGroup, CSSTransition} from "react-transition-group";
 
 import Nav from './modules/nav'
+import {GradientCharts} from './modules/example'
 
 const theme = createMuiTheme({
     palette: {
@@ -45,6 +46,7 @@ class App extends Component {
                         <Router>
                             <Switch>
                                 <Route path={'/'} exact component={Nav}/>
+                                <Route path={'/example'} exact component={GradientCharts}/>
                             </Switch>
                         </Router>
                     </MuiThemeProvider>
