@@ -8,9 +8,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from shapely.geometry import Point, MultiPolygon
 from shapely.geometry.polygon import Polygon
 
-# server = Server('http://admin:password@172.26.131.49:5984//')
-server = Server('http://admin:password@127.0.0.1:5984//')
-to_db = server['all_tweets']
+server = Server('http://admin:password@172.26.131.49:5984//')
+# server = Server('http://admin:password@127.0.0.1:5984//')
+to_db = server['vic_timeline']
 gov_data_db = server['gov_geo_data']
 
 
@@ -131,7 +131,11 @@ def tweets_cleaning(fresh_tweets):
         tweets['doc']['suburb'] = find_suburb(tweet_point)
         tweets['doc']['emotion'] = get_emotion_val(tweet_txt)
 
-        final.append(tweets)
+        if tweets['doc']['state'] == 'Victoria':
+            final.append(tweets)
+            print("in VIC - _id: {}".format(tweets['_id']))
+        else:
+            print("not VIC - _id: {}".format(tweets['_id']))
     return final
 
 
