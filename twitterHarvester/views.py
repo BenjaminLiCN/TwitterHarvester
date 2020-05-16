@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from couchdb import Server
-server = Server('http://admin:password@172.26.131.49:5984//')
+server = Server('http://admin:password@172.26.132.166:5984//')
 db = server['hospital']
 
 #for key_value in db.view('testReduce/new-view',group = True):
@@ -23,7 +23,7 @@ def helloworld(request):
     return JsonResponse(data)
 
 def hospital(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['hospital']
     hospital_json = db['c12415e43341f595eac3f83c5202b461']
     response = JsonResponse(hospital_json)
@@ -32,7 +32,7 @@ def hospital(request):
     return response
 
 def school(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['school']
     school_json = db['c12415e43341f595eac3f83c5202d6df']
     response = JsonResponse(school_json)
@@ -41,7 +41,7 @@ def school(request):
     return response
 
 def confirmed(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['confirmed']
     school_json = db['0510']
     response = JsonResponse(school_json)
@@ -50,7 +50,7 @@ def confirmed(request):
     return response
 
 def confirmedAll(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['confirmed']
     result = {}
     for key_value in db.view('confirmed/confirmed-view', group=False):
@@ -61,7 +61,7 @@ def confirmedAll(request):
     return response
 
 def confirmedAllState(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['state_confirmed']
     result = {}
     for key_value in db.view('state_confirmed/state-confirmed-view', group=False):
@@ -72,7 +72,7 @@ def confirmedAllState(request):
     return response
 
 def suburbAndEmotion(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['all_tweets']
     result = {}
     resultlist = []
@@ -115,7 +115,7 @@ def suburbAndEmotion(request):
 
 
 def suburbAndHottopic(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['all_tweets']
     result = {}
     resultlist = []
