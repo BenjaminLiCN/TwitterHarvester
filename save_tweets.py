@@ -8,7 +8,8 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from shapely.geometry import Point, MultiPolygon
 from shapely.geometry.polygon import Polygon
 
-server = Server('http://admin:password@172.26.131.49:5984//')
+# server = Server('http://admin:password@172.26.131.49:5984//')
+server = Server('http://admin:password@127.0.0.1:5984//')
 to_db = server['all_tweets']
 gov_data_db = server['gov_geo_data']
 
@@ -102,6 +103,7 @@ def tweets_cleaning(fresh_tweets):
         hashtag.append(hashTag)
     for item in range(len(fresh_tweets)):
         if not fresh_tweets[item].coordinates:
+            # print("id: {} no coord".format(fresh_tweets[item].id_str))
             continue
         tweets = {}
         tweets['_id'] = fresh_tweets[item].id_str
@@ -122,7 +124,7 @@ def tweets_cleaning(fresh_tweets):
         tweet_coord = tweets['doc']['Coordinates']['coordinates']
         tweet_point = Point(tweet_coord[0], tweet_coord[1])
 
-        print("id: {}".format(tweets['_id']))
+        # print("id: {}".format(tweets['_id']))
         # add date, emotion, suburb, state to doc
         tweets['doc']['date'] = dict(year=int(tweet_time[0]), month=int(tweet_time[1]), day=int(tweet_time[2]))
         tweets['doc']['state'] = find_state(tweet_point)
