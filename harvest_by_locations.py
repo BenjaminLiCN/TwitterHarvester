@@ -6,16 +6,16 @@ from developer_keys_tokens import config
 import save_tweets
 
 
-class TwitterAuthendication:
+class TwitterAuthentication:
     def __init__(self, consumer_key, consumer_secret):
         self.consumer_key = consumer_key
         self.comsumer_secret = consumer_secret
 
-    def api_authendicate(self):
+    def api_authenticate(self):
         auth = AppAuthHandler(conf['consumer_key'], conf['consumer_secret'])  # creating an OAuthHandler instance
         return auth
 
-    def access_authrndicate(self, access_token, access_token_secret):
+    def access_authenticate(self, access_token, access_token_secret):
         auth = OAuthHandler(self.consumer_key, self.comsumer_secret)
         auth.set_access_token(access_token, access_token_secret)  # re-build an OAuthHandler, get OAuthHandler equipped
         return auth
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     conf = config[harvester_id]
     # print(conf)
     # print(conf['consumer_key'])
-    auth = TwitterAuthendication(conf['consumer_key'], conf['consumer_secret']).api_authendicate()
+    auth = TwitterAuthentication(conf['consumer_key'], conf['consumer_secret']).api_authenticate()
     api = API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
     for city, location in conf['search_by_location']:
         print(city, location)

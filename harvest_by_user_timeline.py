@@ -1,6 +1,6 @@
 from couchdb import Server
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
-from save_tweets import save_search_tweets, tweets_cleaning
+import save_tweets
 import datetime
 from developer_keys_tokens import config
 import sys
@@ -14,8 +14,8 @@ def extract_all_users():
     result = set()
     for user in user_vic:
         username = user_vic[user]['doc']['User_name']
-        print("adding... username: {}".format(username))
         result.add(username)
+    print('extract done!')
     return list(result)
 
 
@@ -46,14 +46,14 @@ class Harvest_by_user_timeline:
         count = 0
         while True:
             fresh_tweets = self.api.user_timeline(screen_name=self.screen_name, count=tweets_per_query, max_id=max_id,
-                                                  tweet_mode='extended', )
+                                                  tweet_mode='extended')
             # print(fresh_tweets[-1].created_at)
             if fresh_tweets and fresh_tweets[-1].created_at > start_date:
                 max_id = fresh_tweets[-1].id - 1  # update max_id to harvester earlier data
-                valid_tweets = tweets_cleaning(fresh_tweets)
+                valid_tweets = save_tweets.tweets_cleaning(fresh_tweets)
                 # if dataframe.shape[0]!=0:
                 #     count += dataframe.shape[0]
-                save_search_tweets(valid_tweets)
+                save_tweets.save_search_tweets(valid_tweets)
             # print(tweets)
             if not fresh_tweets:
                 break
