@@ -9,14 +9,14 @@ import save_tweets
 class TwitterAuthentication:
     def __init__(self, consumer_key, consumer_secret):
         self.consumer_key = consumer_key
-        self.comsumer_secret = consumer_secret
+        self.consumer_secret = consumer_secret
 
     def api_authenticate(self):
         auth = AppAuthHandler(conf['consumer_key'], conf['consumer_secret'])  # creating an OAuthHandler instance
         return auth
 
     def access_authenticate(self, access_token, access_token_secret):
-        auth = OAuthHandler(self.consumer_key, self.comsumer_secret)
+        auth = OAuthHandler(self.consumer_key, self.consumer_secret)
         auth.set_access_token(access_token, access_token_secret)  # re-build an OAuthHandler, get OAuthHandler equipped
         return auth
 
