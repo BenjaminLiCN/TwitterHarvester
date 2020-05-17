@@ -1,9 +1,7 @@
 import sys
 
 from tweepy import OAuthHandler, AppAuthHandler, API
-
-from developer_keys_tokens import config
-import save_tweets
+from crawler import developer_keys_tokens, save_tweets
 
 
 class TwitterAuthentication:
@@ -49,7 +47,7 @@ class Harvest_by_location:
 
 if __name__ == "__main__":
     harvester_id = int(sys.argv[1])
-    conf = config[harvester_id]
+    conf = developer_keys_tokens.config[harvester_id]
     # print(conf)
     # print(conf['consumer_key'])
     auth = TwitterAuthentication(conf['consumer_key'], conf['consumer_secret']).api_authenticate()
