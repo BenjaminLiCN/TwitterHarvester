@@ -5,10 +5,6 @@ import {Pie} from "react-chartjs-2";
 export default function Piechart(props) {
 
 
-    useEffect(() => {
-        console.log("render pie chart")
-    });
-
     return(
         <div>
             <Pie data={{

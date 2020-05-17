@@ -6,14 +6,18 @@ import {TransitionGroup, CSSTransition} from "react-transition-group";
 import Nav from './modules/nav'
 import {GradientCharts} from './modules/example'
 
+const themeMode="light"
 const theme = createMuiTheme({
     palette: {
-        primary: {main: '#7268A6'},
+        primary: {
+            main: '#7268A6'
+        },
     },
 
     overrides: {
 
         MuiTypography: {
+
             fontFamily: 'Roboto',
             h1: {
                 fontSize: 24,

@@ -39,7 +39,7 @@ class Team extends Component {
                             <PeerCard
                                 name={"Chuang Wang"}
                                 role={"Back-end Developer"}
-                                Introduction={["Back-end development and data analysing", "Chuang Wang is a Master of Information Technology student, he is also working as a tutor in more than one subjects. He is responsible for back-end development in the project."]}
+                                Introduction={["Back-end development and data analysing", "Chuang Wang is a Master of Software Engineer student, he is also working as a tutor in more than one subjects. He is responsible for back-end development in the project."]}
                             />
                         </Grid>
                         <Grid md={6} lg={4}>
