@@ -1,0 +1,8 @@
+Host github.com
+  ForwardAgent yes
+  Hostname ssh.github.com
+  IdentityFile ~/.ssh/GitHub
+  Port 443
+  User Damonzhl
+  StrictHostKeyChecking no
+  ProxyCommand nc -X connect -x wwwproxy.unimelb.edu.au:8000 %h %p
