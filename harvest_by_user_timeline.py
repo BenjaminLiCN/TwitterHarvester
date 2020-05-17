@@ -1,3 +1,5 @@
+import time
+import numpy
 from couchdb import Server
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
 import save_tweets
@@ -5,16 +7,22 @@ import datetime
 from developer_keys_tokens import config
 import sys
 
-server = Server('http://admin:password@172.26.131.49:5984//')
+server = Server('http://admin:password@172.26.132.166:5984//')
 # server = Server('http://admin:password@127.0.0.1:5984//')
 user_vic = server['tweets_no_coord']
 
 
 def extract_all_users():
+    print("--- start extract... ---")
     result = set()
-    for user in user_vic:
-        username = user_vic[user]['doc']['User_name']
-        result.add(username)
+    view_result = user_vic.view('_all_docs', include_docs=True)
+    for row in view_result:
+        row_doc = row['doc']
+        if 'doc' in row_doc:
+            username = row_doc['doc']['User_name']
+            result.add(username)
+    # for u_id in user_vic:
+    #     result.add(user_vic[u_id]['doc']['User_name'])
     print('extract done!')
     return list(result)
 
@@ -40,6 +48,7 @@ class Harvest_by_user_timeline:
         self.screen_name = screen_name
 
     def searching(self):
+        print("--- start searching ---")
         max_id = None
         tweets_per_query = 200
         start_date = datetime.datetime(2020, 1, 1, 0, 0, 0)  # the first COVID-19 appear
@@ -47,45 +56,51 @@ class Harvest_by_user_timeline:
         while True:
             fresh_tweets = self.api.user_timeline(screen_name=self.screen_name, count=tweets_per_query, max_id=max_id,
                                                   tweet_mode='extended')
-            # print(fresh_tweets[-1].created_at)
-            if fresh_tweets and fresh_tweets[-1].created_at > start_date:
-                max_id = fresh_tweets[-1].id - 1  # update max_id to harvester earlier data
-                valid_tweets = save_tweets.tweets_cleaning(fresh_tweets)
-                # if dataframe.shape[0]!=0:
-                #     count += dataframe.shape[0]
-                save_tweets.save_search_tweets(valid_tweets)
-            # print(tweets)
             if not fresh_tweets:
                 break
+
+            to_save = []
+            for tweet_i in range(len(fresh_tweets)):
+                tweet = fresh_tweets[tweet_i]
+                if tweet.created_at > start_date:
+                    to_save.append(tweet)
+                    if not tweet.coordinates:
+                        print("-- after 2020 but no coordinate, t_id: {}".format(tweet.id_str))
+                # else:
+                #     print("-- before 2020, t_id: {}".format(tweet.id_str))
+
+            max_id = fresh_tweets[-1].id - 1
+            save_tweets.save_search_tweets(save_tweets.tweets_cleaning(to_save))
+
+
+
+            # if fresh_tweets and fresh_tweets[-1].created_at > start_date:
+            #     max_id = fresh_tweets[-1].id - 1  # update max_id to harvester earlier data
+            #     print("--- call  tweets_cleaning ---")
+            #     valid_tweets = save_tweets.tweets_cleaning(fresh_tweets)
+            #     save_tweets.save_search_tweets(valid_tweets)
+            # el
+            # else:
+            #     print("--- before 2020, and the date is {}, and user_id is {}".format(fresh_tweets[-1].created_at, fresh_tweets[tweet_i].id_str))
 
 
 if __name__ == "__main__":
     print('hello test')
     harvester_id = int(sys.argv[1])
     conf = config[harvester_id]
+    start_time = time.time()
     users = extract_all_users()
-    print(len(users))
+    print("--- #users is {}".format(len(users)))
+    print("-- time in total: {}".format(time.time() - start_time))
     # print(conf)
     # print(conf['consumer_key'])
     auth = TwitterAuthentication(conf['consumer_key'], conf['consumer_secret']).api_authenticate()
     api = API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True, timeout=200)
+    # print("--- start splitting the list ---")
+    chunks = numpy.array_split(users, 8)
+    chunk = []
+    for i in range(len(chunks)):
+        chunk = chunks[conf['developer_id'] - 1]
 
-    # all_users = len(users)
-    # if conf['developer_id'] == 1:
-    #     users = users[0:all_users//8]
-    # elif conf['developer_id'] == 2:
-    #     users = users[all_users//8:all_users//4]
-    # elif conf['developer_id'] == 3:
-    #     users = users[all_users//4:3*all_users//8]
-    # elif conf['developer_id'] == 4:
-    #     users = users[3 * all_users//8:all_users//2]
-    # elif conf['developer_id'] == 5:
-    #     users = users[3 * all_users//8:all_users//2]
-    # elif conf['developer_id'] == 6:
-    #     users = users[all_users//2:5*all_users//8]
-    # elif conf['developer_id'] == 7:
-    #     users = users[5*all_users//8:3 * all_users//4]
-    # elif conf['developer_id'] == 8:
-    #     users = users[3 * all_users//4:3 * all_users//4]
-    for item in users:
+    for item in chunk:
         Harvest_by_user_timeline(api, item).searching()
