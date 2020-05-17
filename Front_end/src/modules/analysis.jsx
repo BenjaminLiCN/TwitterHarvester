@@ -9,20 +9,31 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
-import { Line } from 'react-chartjs-2';
+import { Line,Pie} from 'react-chartjs-2';
 
+import {strFromDate} from '../methods/DateTransfer'
 
 
 export default function Analysis(props){
 
     const vicCases=[]
-    const [scale, setScale] = useState('state')
-    const [area, setArea] = useState('VIC')
-    const [casesData, setcasesData] = useState(vicCases)
-
+    const [scale, setScale] = useState('suburb')
+    const [area, setArea] = useState('ballarat')
+    const [casesData, setcasesData] = useState([])
+    const [topicAxis, settopicAxis]= useState([])
+    const [casesAxis, setcasesAxis]= useState([])
     const [topicData, settopicData] = useState([])
+
+    const [pieAxis, setpieAxis] = useState([])
+    const [pieData, setpieData] = useState([])
+
+    const [pie2Axis, setpie2Axis] = useState([])
+    const [pie2Data, setpie2Data] = useState([])
+
+
     const [date, setDate]=useState('0513')
     const [loaded, setloaded]=useState(false)
+
 
 
     const clearState=()=> {
@@ -34,8 +45,7 @@ export default function Analysis(props){
 
             props.statecases[datestr].forEach(day => {
                     if (day.state === 'VIC') {
-                        var item = {x: datestr, y: day.cases}
-                        vicCases.push(item)
+                        vicCases.push(day.cases)
                     }
                 }
             )
@@ -57,68 +67,90 @@ export default function Analysis(props){
                 }
             }
         }*/
-       if (scale === 'state') {
+        if (scale === 'state') {
 
-           for (const datestr of stateCaseDate) {
+            for (const datestr of stateCaseDate) {
 
-               props.statecases[datestr].forEach(day => {
-                       if (day.state === name) {
-                           var item = {x: datestr, y: day.cases}
-                           //console.log("item x " + item.x + " y " + item.y)
-                           setcasesData(casesData=>[...casesData, item]);
-                           set
-                       }
-                   }
-               )
-           }
+                props.statecases[datestr].forEach(day => {
+                        if (day.state === name) {
+                            setcasesAxis(casesAxis => [...casesAxis, datestr])
+                            setcasesData(casesData => [...casesData, day.cases]);
+                        }
+                    }
+                )
+            }
 
-           setloaded(true)
+            setloaded(true)
 
 
+        } else if (scale === 'suburb') {
 
-       }
-        else if (scale === 'suburb') {
+            for (const datestr of suburbCaseDate) {
 
-           for (const datestr of suburbCaseDate) {
+                props.suburbcases[datestr].forEach(day => {
+                        if (day.Suburb === name) {
+                            var item = {x: datestr, y: day.cases}
+                            console.log("item x " + item.x + " y " + item.y)
+                            setcasesData(casesData => [...casesData, item]);
+                        }
+                    }
+                )
+            }
 
-               props.suburbcases[datestr].forEach(day => {
-                       if (day.Suburb === name) {
-                           var item = {x: datestr, y: day.cases}
-                           console.log("item x " + item.x + " y " + item.y)
-                           setcasesData(casesData=>[...casesData, item]);}
-                   }
-               )
-           }
+            var low= name.toLowerCase()
+            console.log("try print topic name "+low)
+            console.log("try print topic name "+date)
 
+            var topic = props.suburbtopic[date][low]
+            try {
 
-/*
-           Object.keys(props.suburbtopic).forEach
-           (
-               date=>{
-                   var total=0
-                   Object.keys(props.suburbtopic[date]).forEach
-                   (
-                        suburb=>{
-                           var topic = props.suburbtopic[date][suburb]
-                           topic.map(
-                               (t)=>{
-                                    total+= Number(t.num)
-                           }
-                           )
-                       }
-                   )
-                   var item = {x: date, y: total }
-                   console.log("topics"+ item.x + item.y)
-                   settopicData(topicData=>[...topicData, item]);
-
-               }
-           )
-*/
+                topic.map(
+                    (t) => {
+                        setpieAxis(pieAxis => [...pieAxis, t.word])
+                        setpieData(pieData => [...pieData, t.num])
+                    }
+                )
+            }catch (e) {
+                console.log(e)
+            }
 
 
-       }
+            var emotion = props.suburbemtion[date][low]
+            try {
+                emotion.map(
+                    (t) => {
+                        setpie2Axis(pie2Axis => [...pie2Axis, t.emotion])
+                        setpie2Data(pie2Data => [...pie2Data, t.num])
+                    }
+                )
+            }catch (e) {
+                console.log(e)
+            }
 
+
+
+            Object.keys(props.suburbtopic).forEach
+            (date => {
+                    var total = 0
+                    Object.keys(props.suburbtopic[date]).forEach
+                    (
+                        suburb => {
+                            var topic = props.suburbtopic[date][suburb]
+                            topic.map(
+                                (t) => {
+                                    total += Number(t.num)
+                                }
+                            )
+                        }
+                    )
+                    var item1 = {x: date, y: total}
+                    console.log("topics" + item1.x + item1.y)
+                    //settopicData(topicData=>[...topicData, totalitem]);
+                }
+            )
+        }
     }
+
 
     const handleScaleChange = (event) => {
         setScale(event.target.value)
@@ -135,15 +167,29 @@ export default function Analysis(props){
     const Data = [
         {angle: 1}, {angle: 5}, {angle: 2}
     ]
-
+    const d1=[1,2,3]
+    const d2=[2,4,3]
         return (
             <div>
                 <div style={{display: 'flex', marginTop: '200px',marginLeft:'60px'}}>
 
-                    <div style={{width:'800px',height:'200px'}}>
-                        <Line data={casesData}/>
-                    </div>
+                        <div style={{width:'800px', height:'200px'}}>
+                            <Line  data={{ labels:casesAxis, datasets: [{data:casesData, fill:false}]}}/>
+                        </div>
+                        <br/>
+                        <Pie data={{
+                                labels: pieAxis,
+                                datasets: [{
+                                    data: pieData
+                                }]
+                            }}/>
 
+                    <Pie data={{
+                        labels: pie2Axis,
+                        datasets: [{
+                            data: pie2Data
+                        }]
+                    }}/>
 
 
                     {/*<div>
