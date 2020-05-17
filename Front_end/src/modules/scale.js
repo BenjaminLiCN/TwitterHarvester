@@ -15,7 +15,9 @@ export const searchState3=new Map([
     ['8','ACT'],['1','NSW'],["2","VIC"],["5","WA"],["6","TAS"],["4","SA"],["7","NT"],["3","QLD"]
 ])//state_pid
 
-
+export const twitterDate=[
+    '0513','0514','0515','0516','0517'
+]
 export const suburbName= [...searchSuburb.keys()]
 export const stateName= [...searchState.keys()]
 
