@@ -2,9 +2,8 @@ import time
 import numpy
 from couchdb import Server
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
-import save_tweets
+from crawler import save_tweets, developer_keys_tokens
 import datetime
-from developer_keys_tokens import config
 import sys
 
 server = Server('http://admin:password@172.26.132.166:5984//')
@@ -64,8 +63,8 @@ class Harvest_by_user_timeline:
                 tweet = fresh_tweets[tweet_i]
                 if tweet.created_at > start_date:
                     to_save.append(tweet)
-                    if not tweet.coordinates:
-                        print("-- after 2020 but no coordinate, t_id: {}".format(tweet.id_str))
+                    # if not tweet.coordinates:
+                    #     print("-- after 2020 but no coordinate, t_id: {}".format(tweet.id_str))
                 # else:
                 #     print("-- before 2020, t_id: {}".format(tweet.id_str))
 
@@ -87,7 +86,7 @@ class Harvest_by_user_timeline:
 if __name__ == "__main__":
     print('hello test')
     harvester_id = int(sys.argv[1])
-    conf = config[harvester_id]
+    conf = developer_keys_tokens.config[harvester_id]
     start_time = time.time()
     users = extract_all_users()
     print("--- #users is {}".format(len(users)))
