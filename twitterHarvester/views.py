@@ -72,26 +72,34 @@ def confirmedAllState(request):
     return response
 
 def suburbAndEmotion(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    server = Server('http://admin:password@172.26.131.49:5984//')
     db = server['all_tweets']
     result = {}
     resultlist = []
     doc = {}
     dateDict = {}
     for key_value in db.view('state/suburb-view', group=True):
+
         single_result = {}
         mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
         suburb = key_value.key[1]
+        # if suburb == 'bayside' and mydate =='0513':
+        #    print(key_value)
         if mydate in doc.keys():
             dateDict = doc[mydate]
             # print(dateDict)
             if suburb in dateDict.keys():
+                # if mydate == '0513' and suburb == 'bayside':
+                #     print(dateDict[suburb])
+                #     print(key_value)
                 suburbList = dateDict[suburb]
                 single_result['emotion'] = key_value.key[3]
                 single_result['num'] = key_value.value
                 suburbList.append(single_result)
                 dateDict[suburb] = suburbList
             else:
+                # if mydate == '0513' and suburb == 'bayside':
+                #    print('test')
                 suburbList = []
                 single_result['emotion'] = key_value.key[3]
                 single_result['num'] = key_value.value
@@ -100,6 +108,8 @@ def suburbAndEmotion(request):
             doc[mydate] = dateDict
         else:
             suburbList = []
+            single_result = {}
+            dateDict = {}
             single_result['emotion'] = key_value.key[3]
             single_result['num'] = key_value.value
             suburbList.append(single_result)
