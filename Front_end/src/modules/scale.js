@@ -12,8 +12,9 @@ export const searchState2=new Map([
     ['New South Wales',0],['Victoria',1],['Queensland',2],['Western Australia',3],['South Australia',4],['Australian Capital Territory',5],['Tasmania',6],['Northern Territory',7]
 ])
 export const searchState3=new Map([
-    ['8',5]
+    ['8','ACT'],['1','NSW'],["2","VIC"],["5","WA"],["6","TAS"],["4","SA"],["7","NT"],["3","QLD"]
 ])//state_pid
+
 
 export const suburbName= [...searchSuburb.keys()]
 export const stateName= [...searchState.keys()]

@@ -14,6 +14,7 @@ const theme = createMuiTheme({
     overrides: {
 
         MuiTypography: {
+            fontFamily: 'Roboto',
             h1: {
                 fontSize: 24,
                 fontWeight: 500,

@@ -13,7 +13,9 @@ class Nav extends Component {
         this.state = {
             value: 0,
             statecases: false,
-            suburbcases: false
+            suburbcases: false,
+            suburbtopic: false,
+            suburbemotion : false
         }
         ;
     }
@@ -44,7 +46,7 @@ class Nav extends Component {
         fetch('http://172.26.131.49:8081/suburbAndEmotion/')
             .then(res => res.json())
             .then(suburbdata => {
-                this.setState({suburbemotion: suburbdata})
+                this.setState({suburbemotion: suburbdata.doc})
             }).catch(console.log)
 
     }
@@ -70,8 +72,8 @@ class Nav extends Component {
                     </Toolbar>
                 </AppBar>
 
-                {value === 0 && <MapContainer/>}
-                {value === 1 && <Analysis statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotions}/>}
+                {value === 0 && <MapContainer statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion}/>}
+                {value === 1 && <Analysis statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion}/>}
                 {value === 2 && <Team/>}
             </div>
         )

@@ -14,14 +14,16 @@ export function dayFromStr(date) {
 
 export function dayFromValue(value){
     var day=0
-    if(value<31)
+    if(value<31)//1
         day=value+1
-    else if(value<60)
-        day=value-30
-    else if(value<91)
-        day=value-59
-    else if(value<121)
-        day=value-90
+    else if(value<60)//2
+        day=value-30 //-1
+    else if(value<91)//3
+        day=value-59 //-2
+    else if(value<121)//4
+        day=value-90//-3
+    else if(value<152)//5
+        day=value-120//-4
     return day
 }
 

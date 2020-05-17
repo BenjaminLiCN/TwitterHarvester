@@ -1,40 +1,19 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import ReactDOM from "react-dom";
 import ReactDOMServer from 'react-dom/server';
-import {Paper,Button} from '@material-ui/core';
+import {Paper, Button} from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Checkbox} from "@material-ui/core";
-import {PieChart} from 'react-chartkick'
 import 'chart.js'
 import MarkerClusterer from 'node-js-marker-clusterer';
 import Colorlegend from "./colorlegend";
-import {stateCaseDate,suburbCaseDate,searchSuburb,searchState,searchState2} from "../modules/scale"
+import {stateCaseDate, suburbCaseDate, searchSuburb, searchState, searchState2} from "../modules/scale"
 
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Chip from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import clsx from 'clsx';
-import { ContinuousColorLegend,SearchableDiscreteColorLegend, RadialChart} from "react-vis";
-import { Bullet } from '@nivo/bullet'
-
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import DirectionsIcon from '@material-ui/icons/Directions';
 import {colorOnConfirmed} from '../methods/defineColor'
-import {dayFromStr,monthFromStr,dayFromValue,strFromDate} from '../methods/DateTransfer'
+import {dayFromStr, monthFromStr, dayFromValue, strFromDate} from '../methods/DateTransfer'
 
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import Piechart from './piechart'
 
 import mapStyles from '../resources/mapstyle.json';
 import InnerMap from './innermap';
@@ -44,11 +23,12 @@ import school_marker from '../resources/school_marker.png'
 import toiletpaper_marker from '../resources/toiletpaper_marker.png'
 import discrimination_marker from '../resources/discrimination_marker.png'
 
-import {fetchHospitals} from '../methods/fetchAPIs'
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import {searchState3} from './scale'
+import {withStyles, makeStyles} from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+
+
 const styles = theme => ({
     map: {
         width: '100%',
@@ -68,8 +48,8 @@ const styles = theme => ({
             width: theme.spacing(300),
             height: theme.spacing(16),
         },
-        width:theme.spacing(50),
-        height:theme.spacing(100),
+        width: theme.spacing(50),
+        height: theme.spacing(100),
         position: 'fixed',
         top: '30%',
         left: '60%',
@@ -139,23 +119,23 @@ const marks = [
         label: '01/01',
     },
     {
-        value: 27,
+        value: 28,
         label: '29/01',
     },
     {
-        value: 58,
+        value: 59,
         label: '29/02',
     },
     {
-        value: 83,
+        value: 88,
         label: '29/03',
     },
     {
-        value: 110,
+        value: 121,
         label: '01/05',
     },
     {
-        value: 120,
+        value: 133,
         label: '13/05',
     }
 ];
@@ -203,14 +183,16 @@ const AirbnbSlider = withStyles({
         left: 'calc(-50% + 4px)',
     },
 })(Slider);
+
 function valuetext(value) {
     return `Date: ${value}`;
 }
+
 function AirbnbThumbComponent(props) {
     return (
         <span {...props}>
-      <span className="bar" />
-      <span className="bar" />
+      <span className="bar"/>
+      <span className="bar"/>
     </span>
     );
 }
@@ -227,42 +209,50 @@ class MapContainer extends Component {
             dateInfo: {
                 month: 1,
                 week: 1,
-                day: 1
+                day: 1,
+                str:''
             },
             emotionInfo: {
                 positive: 0,
                 middle: 0,
                 negative: 0
             },
+            locationInfo: {
+                state: '',
+                suburb: 'BALLARAT'
+            },
+
+            pieAxis: [],
+            pieData: [],
+            pie2Data: [],
+            pie2Axis: [],
+
             showKeyDate: false,
             keyDateText: '',
-            hospital_location:[],
-            school_location:[],
+            hospital_location: [],
+            school_location: [],
             hospitals: [],
-            schools:[],
-            toiletpapers:[],
-            discriminations:[],
-            cities:[],
+            schools: [],
+            toiletpapers: [],
+            discriminations: [],
+            cities: [],
             scale: 'state',
-            confirm:[{Suburb:'aa',cases:46}],
-            suburbcases:'false',
-            statecases:'false',
-            suburbemotions:'false',
+            confirm: [{Suburb: 'aa', cases: 46}],
             showHospital: false,
             showSchool: false,
             showHotTopic: false,
-            clearStyle:false,
+            clearStyle: false,
             loaded: false,
-            map:null,
-            bottom:'100px',
-            left:'20px',
-            show:'none',
-            cases:0,
-            happy:5,
-            sad:7,
-            angry:8,
-            fear:2,
-            setOpen:false,
+            map: null,
+            bottom: '100px',
+            left: '20px',
+            show: 'flex',
+            cases: 0,
+            happy: 5,
+            sad: 7,
+            angry: 8,
+            fear: 2,
+            setOpen: false,
             opacity: '30%',
             level: 3,
             searchText: '',
@@ -296,137 +286,100 @@ class MapContainer extends Component {
     }
 
     handleClick = () => {
-        this.setState({setOpen:true});
+        this.setState({setOpen: true});
     };
 
     handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
-        this.setState({setOpen:false});
-        this.setState({showKeyDate:false});
+        this.setState({setOpen: false});
+        this.setState({showKeyDate: false});
     };
-    async componentDidMount() {
-
-/*
-        fetch('http://172.26.131.49:8081/hospital/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({hospital_location:data.doc})
-                console.log(data.doc)
-            }).catch(console.log)
-
-
-        fetch('http://172.26.131.49:8081/school/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({school_location:data.doc})
-                console.log(data.doc)
-            }).catch(console.log)
-*/
-
-
-/*        await fetch('http://172.26.131.49:8081/confirmed/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({confirm:data.doc.map(c=>({Suburb:c.Suburb,cases:c.cases}))})
-                console.log('confirm'+data.doc)
-                console.log('cases0 '+this.state.confirm[0].cases)
-                this.setState({loaded: true})
-            }).catch(console.log)*/
-        await fetch('http://172.26.131.49:8081/confirmedAllState/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({statecases:data})
-            }).catch(console.log)
-
-        await fetch('http://172.26.131.49:8081/confirmedAll/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({suburbcases:data})
-            }).catch(console.log)
-
-        await fetch('http://172.26.131.49:8081/suburbAndEmotion/')
-            .then(res=>res.json())
-            .then(data=>{
-                this.setState({suburbemotions:data.doc})
-                console.log('emotions'+data)
-                console.log('emotion 0 '+this.state.suburbemotions[0].num)
-                this.setState({loaded: true})
-            }).catch(console.log)
-
-    }
 
     initBorder(map) {
 
-        const that= this;
+        const that = this;
 
-        map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
-         //  map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
-       /* map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')
-        map.data.loadGeoJson('https://data.gov.au/geoserver/act-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_83468f0c_313d_4354_9592_289554eb2dc9&outputFormat=json')
+        // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
         map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/nsw-state-boundary/wfs?request=GetFeature&typeName=ckan_a1b278b1_59ef_4dea_8468_50eb09967f18&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/qld-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_2dbbec1a_99a2_4ee5_8806_53bc41d038a7&outputFormat=json')
+        map.data.loadGeoJson('https://data.gov.au/geoserver/act-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_83468f0c_313d_4354_9592_289554eb2dc9&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/wa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_5c00d495_21ba_452d_ae46_1ad0ca05e41f&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/tas-state-boundary/wfs?request=GetFeature&typeName=ckan_cf2ebc53_1633_4c5c_b892_bfc3945d913b&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/sa-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_8f996b8c_d939_4757_a231_3fec8cb8e929&outputFormat=json')
         map.data.loadGeoJson('https://data.gov.au/geoserver/nt-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_5162e11c_3259_4894_8b9e_f44540b6cb11&outputFormat=json')
-        map.data.loadGeoJson('https://data.gov.au/geoserver/qld-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_2dbbec1a_99a2_4ee5_8806_53bc41d038a7&outputFormat=json')*/
+
+        map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
 
         map.data.addListener('mouseover', function (event) {
-            map.data.overrideStyle(event.feature, {
-                fillColor: '#ff8a80',
-                strokeWeight: 8,
-                fillOpacity: 0.6
-            });
-            if(map.zoom>5 && (map.getCenter().lat()>-40&&map.getCenter().lat()<-30)&&(map.getCenter().lng()>135&&map.getCenter().lng()<150)) {
-                console.log("load vic")
-                that.setState({scale:'suburb'})
-                map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
-               // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
-                that.setState({show:"none"});
-            }
-            else
-            {
-                if(that.state.scale==='suburb')
-                {
-                    map.data.setStyle({})
-                    that.setState({scale:'state'})
-                    map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
-                }
-            }
-
-
-            console.log("scale= "+that.state.scale)
-
-            if(that.state.scale==='suburb') {
-
-                if(suburbCaseDate.includes(strFromDate(that.state.dateInfo.month,that.state.dateInfo.day)))
-                {
-                    try {
-                        var suburbname = event.feature.getProperty('vic_lga__3')
-                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
-                        var suburbindex = searchSuburb.get(suburbname)
-                        that.setState({cases: that.state.suburbcases[datestr][suburbindex].cases})
-                    }catch (e) {
-                        console.log(e)
+                map.data.overrideStyle(event.feature, {
+                    fillColor: '#ff8a80',
+                    strokeWeight: 8,
+                    fillOpacity: 0.6
+                });
+                /*    if(map.zoom>5 && (map.getCenter().lat()>-40&&map.getCenter().lat()<-30)&&(map.getCenter().lng()>135&&map.getCenter().lng()<150)) {
+                        console.log("load vic")
+                        that.setState({scale:'suburb'})
+                        //map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
+                       // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa')
+                        that.setState({show:"none"});
                     }
-                }
-            }
+                    else
+                    {
+                        if(that.state.scale==='suburb')
+                        {
+                            //map.data.setStyle({})
+                            that.setState({scale:'state'})
+                           // map.data.loadGeoJson('https://api.jsonbin.io/b/5eab07bf07d49135ba485cfa/5')
+                        }
+                    }*/
+                map.data.loadGeoJson('https://data.gov.au/geoserver/vic-state-boundary-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_b90c2a19_d978_4e14_bb15_1114b46464fb&outputFormat=json')
 
-        else if(that.state.scale==='state') {
 
-                if (stateCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
-                   try {
-                       var statename = event.feature.getProperty('STATE_NAME')
-                       var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
-                       var stateindex = searchState2.get(statename)
-                       that.setState({cases: that.state.statecases[datestr][stateindex].cases})
-                   } catch (e) {
-                       console.log(e)
-                   }
+                that.setState({
+                    locationInfo: {
+                        state: searchState3.get(event.feature.getProperty('state_pid')),
+                        suburb: event.feature.getProperty('vic_lga__3')
+                    }
+                })
+
+                var cases=0
+
+                try {
+                    var day = that.props.statecases[that.state.dateInfo.str]
+                    day.map(
+                        (t) => {
+                            if (t.state === searchState3.get(event.feature.getProperty('state_pid')))
+                                cases = t.cases
+                        }
+                    )
+                }catch (e) {
+                    console.log(e)
                 }
+                that.setState({cases:cases})
+                /*
+                if(that.state.scale==='suburb') {
+
+
+                }
+
+            else if(that.state.scale==='state') {
+
+                    if (stateCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
+                       try {
+                           var statename = event.feature.getProperty('STATE_NAME')
+                           var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                           var stateindex = searchState2.get(statename)
+                           that.setState({cases: that.props.statecases[datestr][stateindex].cases})
+                       } catch (e) {
+                           console.log(e)
+                       }
+                    }
+                }*/
             }
-        });
+        );
 
 
         map.data.addListener('mouseout', function () {
@@ -435,54 +388,110 @@ class MapContainer extends Component {
         });
 
         map.data.addListener('click', function (event) {
-            const InfoWindowContent = (
-                <div>
-                    This is the info <br/>
-                    ......
 
-                </div>
-            );
-            console.log("month" + that.state.dateInfo.month+"day"+ that.state.dateInfo.day)
+            console.log("month" + that.state.dateInfo.month + "day" + that.state.dateInfo.day)
 
+            console.log("zoom:" + map.getZoom())
+            console.log("lat" + map.getCenter().lat())
+            console.log("lng" + map.getCenter().lng())
 
-            console.log("zoom:"+map.getZoom())
-            console.log("lat"+map.getCenter().lat())
-            console.log("lng"+map.getCenter().lng())
-            console.log((map.getCenter().lat())>-45)
-
-            var latBound= map.getBounds().getNorthEast().lat()-map.getBounds().getSouthWest().lat()
-            var latLocation = event.latLng.lat()-map.getBounds().getSouthWest().lat()
-            var bottom= latLocation/latBound * 1000 -40 + "px"
+            var latBound = map.getBounds().getNorthEast().lat() - map.getBounds().getSouthWest().lat()
+            var latLocation = event.latLng.lat() - map.getBounds().getSouthWest().lat()
+            var bottom = latLocation / latBound * 1000 - 40 + "px"
             that.setState({bottom: bottom})
             console.log(bottom)
 
-            var lngBound= map.getBounds().getNorthEast().lng()-map.getBounds().getSouthWest().lng()
-            console.log("lngBound "+ lngBound)
-            var lngLocation = event.latLng.lng()-map.getBounds().getSouthWest().lng()
-            console.log("lngLocation "+ lngLocation)
-            var left= lngLocation/lngBound * 1000 + 10 + "px"
+            var lngBound = map.getBounds().getNorthEast().lng() - map.getBounds().getSouthWest().lng()
+            console.log("lngBound " + lngBound)
+            var lngLocation = event.latLng.lng() - map.getBounds().getSouthWest().lng()
+            console.log("lngLocation " + lngLocation)
+            var left = lngLocation / lngBound * 1000 + 10 + "px"
             that.setState({left: left})
             console.log(left)
 
 
+            /*           if (suburbCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
+                           try {
+                               var suburbname = event.feature.getProperty('vic_lga__3')
+                               var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+                               var suburbindex = searchSuburb.get(suburbname)
+                               that.setState({cases: that.props.suburbcases[datestr][suburbindex].cases})
+                           } catch (e) {
+                               console.log(e)
+                           }
+                       }*/
 
-            if(that.state.show==="flex")
-                that.setState({show:"none"});
+            try {
 
-            else
-                 that.setState({show:"flex"});
+                var name = that.state.locationInfo.suburb
+                var low = name.toLowerCase()
+                var date = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
+
+                console.log("try print topic name " + low)
+                console.log("try print topic name " + date)
+
+                console.log("print a topic example" + that.props.suburbtopic[date][low][0].word)
+
+                var topic = that.props.suburbtopic[date][low]
+                var emotion = that.props.suburbemtion[date][low]
+
+            } catch (e) {
+                console.log(e)
+            }
+            try {
+                that.state.pieAxis.length = 0
+                that.state.pieData.length = 0
+
+                topic.map(
+                    (t, index) => {
+                        if (index < 10) {
+                            that.setState({pieAxis: [...that.state.pieAxis, t.word]})
+                            that.setState({pieData: [...that.state.pieData, t.num]})
+                        }
+                    }
+                )
+            } catch (e) {
+                console.log(e)
+            }
 
 
+            try {
+                that.state.pie2Axis.length = 0
+                that.state.pie2Data.length = 0
 
-   /*         let infoWindow = new window.google.maps.InfoWindow({position: event.latLng});
-            const content = ReactDOMServer.renderToString(InfoWindowContent);
-            infoWindow.setContent(content);
-            infoWindow.open(map);
-            window.google.maps.event.addListener(infoWindow, 'domready', function (e) {
-            })*/
+                var pie2Data = [0, 0, 0]
+                emotion.map(
+                    (t) => {
+                        if (t.emotion === 'positive')
+                            pie2Data[0] += 1
+                        else if (t.emotion === 'middle')
+                            pie2Data[1] += 1
+                        else if (t.emotion === 'negative')
+                            pie2Data[2] += 1
+                    }
+                )
+                if (pie2Data[0] + pie2Data[1] + pie2Data[2] > 0) {
+                    that.setState({pie2Axis: ['positive', 'middle', 'negative']})
+                    that.setState({pie2Data: pie2Data})
+                }
+            } catch (e) {
+                console.log(e)
+            }
+            /*           if(that.state.show==="flex")
+                           that.setState({show:"none"});
+
+                       else
+                            that.setState({show:"flex"});*/
+
+
+            /*         let infoWindow = new window.google.maps.InfoWindow({position: event.latLng});
+                     const content = ReactDOMServer.renderToString(InfoWindowContent);
+                     infoWindow.setContent(content);
+                     infoWindow.open(map);
+                     window.google.maps.event.addListener(infoWindow, 'domready', function (e) {
+                     })*/
 
         });
-
 
 
         this.changeBorder(map)
@@ -493,46 +502,33 @@ class MapContainer extends Component {
 
     changeBorder(map) {
 
-        const that= this;
+        const that = this;
 
         map.data.setStyle(function (feature) {
 
             var cases = 0
-            if(that.state.scale==='state') {
+            if (that.state.scale === 'state') {
 
-                if (stateCaseDate.includes(strFromDate(that.state.dateInfo.month, that.state.dateInfo.day))) {
-                    try {
-                        var statename = feature.getProperty('STATE_NAME')
-                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
-                        var stateindex = searchState2.get(statename)
-                        cases = that.state.statecases[datestr][stateindex].cases
-                    }catch (e) {
-                        console.log(e)
-                    }
 
+                try {
+                    var day = that.props.statecases[that.state.dateInfo.str]
+                    day.map(
+                        (t) => {
+                            if (t.state === searchState3.get(feature.getProperty('state_pid')))
+                               cases=t.cases
+                        }
+                    )
+                } catch (e) {
+                    console.log(e)
                 }
-            }
 
-            else if(that.state.scale==='suburb') {
 
-                if(suburbCaseDate.includes(strFromDate(that.state.dateInfo.month,that.state.dateInfo.day)))
-                {
-                    try {
-                        var suburbname = feature.getProperty('vic_lga__3')
-                        var datestr = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
-                        var suburbindex = searchSuburb.get(suburbname)
-                        cases = that.state.suburbcases[datestr][suburbindex].cases
-                    }catch (e) {
-                        console.log(e)
-                    }
-                }
+            } else if (that.state.scale === 'suburb') {
+
 
             }
 
-            console.log("cases for color rending: " + cases)
-
-
-            let color=colorOnConfirmed(cases);
+            let color = colorOnConfirmed(cases);
 
             return {
                 fillColor: color,
@@ -542,10 +538,11 @@ class MapContainer extends Component {
             };
         });
 
-         this.setState({map:map})
+        this.setState({map: map})
 
     }
-    initCitiesMarkers(map){
+
+    initCitiesMarkers(map) {
 
         location.cities.map(city => {
             this.state.cities.push(new window.google.maps.Marker({
@@ -553,21 +550,21 @@ class MapContainer extends Component {
                 map: map,
             }))
         })
-        this.state.map=map;
+        this.state.map = map;
 
     }
 
     initHotTopicMarkers(map) {
 
-            location.toiletpapers.map(toiletpaper => {
-                this.state.toiletpapers.push(new window.google.maps.Marker({
-                    position: toiletpaper,
-                    map: map,
-                    animation: window.google.maps.Animation.BOUNCE,
-                    icon: toiletpaper_marker
-                }))
-            })
-           this.state.map = map
+        location.toiletpapers.map(toiletpaper => {
+            this.state.toiletpapers.push(new window.google.maps.Marker({
+                position: toiletpaper,
+                map: map,
+                animation: window.google.maps.Animation.BOUNCE,
+                icon: toiletpaper_marker
+            }))
+        })
+        this.state.map = map
         location.discriminations.map(discrimination => {
             this.state.discriminations.push(new window.google.maps.Marker({
                 position: discrimination,
@@ -580,19 +577,7 @@ class MapContainer extends Component {
     }
 
 
-
     initHospitalMarkers(map) {
-
-/*        console.log("state"+this.state.datas)
-
-             this.state.datas.map((hospital, index) => {
-                        console.log(hospital.state)
-                        this.state.hospitals.push(new window.google.maps.Marker({
-                            position: hospital,
-                            map: map,
-                            icon: hospital_marker
-                        }))
-                    })*/
 
         location.hospitals.map(hospital => {
             this.state.hospitals.push(new window.google.maps.Marker({
@@ -601,20 +586,21 @@ class MapContainer extends Component {
                 icon: hospital_marker
             }))
         })
-        this.state.map=map;
+        this.state.map = map;
 
-    var markerCluster = new MarkerClusterer(map, this.state.hospitals,{
-            styles: [{
-                width: 16,
-                height: 16,
-                url: 'https://i.imgur.com/pZcCLJn.png',
-            }],
-        },
+        var markerCluster = new MarkerClusterer(map, this.state.hospitals, {
+                styles: [{
+                    width: 16,
+                    height: 16,
+                    url: 'https://i.imgur.com/pZcCLJn.png',
+                }],
+            },
         );
 
-        this.state.map=map;
+        this.state.map = map;
 
     }
+
     initSchoolMarkers(map) {
         location.schools.map(school => {
             this.state.schools.push(new window.google.maps.Marker({
@@ -623,9 +609,9 @@ class MapContainer extends Component {
                 icon: school_marker
             }))
         })
-        this.state.map=map;
+        this.state.map = map;
 
-        var markerCluster = new MarkerClusterer(map, this.state.schools,{
+        var markerCluster = new MarkerClusterer(map, this.state.schools, {
                 styles: [{
                     width: 16,
                     height: 16,
@@ -634,7 +620,7 @@ class MapContainer extends Component {
             },
         );
 
-        this.state.map=map;
+        this.state.map = map;
 
     }
 
@@ -644,7 +630,8 @@ class MapContainer extends Component {
             dateInfo: {
                 month: Math.floor(value / 30) + 1,
                 week: Math.floor(value / 7) + 1,
-                day: dayFromValue(value)
+                day: dayFromValue(value),
+                str: strFromDate(Math.floor(value / 30) + 1, dayFromValue(value))
             }
         });
 
@@ -654,42 +641,41 @@ class MapContainer extends Component {
                 this.setState({showKeyDate: true, keyDateText: keyDates[day].info})
             }
         }
-        if(this.state.showHotTopic)
-             this.initHotTopicMarkers(this.state.map);
+        if (this.state.showHotTopic)
+            this.initHotTopicMarkers(this.state.map);
 
         this.changeBorder(this.state.map)
 
-/*        if (value === 4)
-                this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
-        else if (value === 3)
-                this.state.discriminations.map(discrimination => discrimination.setMap(null))
-           else if (value === 1 || value === 2)
-            {
-                this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
-                this.state.discriminations.map(discrimination => discrimination.setMap(null))
-            }*/
+        /*        if (value === 4)
+                        this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
+                else if (value === 3)
+                        this.state.discriminations.map(discrimination => discrimination.setMap(null))
+                   else if (value === 1 || value === 2)
+                    {
+                        this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
+                        this.state.discriminations.map(discrimination => discrimination.setMap(null))
+                    }*/
 
     };
 
-    styleChange = (event) =>{
-        if(this.state.clearStyle)
+    styleChange = (event) => {
+        if (this.state.clearStyle)
             this.setState({clearStyle: false})
         else
-            this.setState({clearStyle:true})
-        if (event.target.checked){
+            this.setState({clearStyle: true})
+        if (event.target.checked) {
             this.state.map.data.setStyle({})
         }
 
-        }
-
+    }
 
 
     HospitalCheckboxChange = (event) => {
 
-        if(this.state.showHospital)
-            this.setState({showHospital:false});
+        if (this.state.showHospital)
+            this.setState({showHospital: false});
         else
-            this.setState({showHospital:true});
+            this.setState({showHospital: true});
         if (event.target.checked)
             this.initHospitalMarkers(this.state.map);
         else
@@ -699,10 +685,10 @@ class MapContainer extends Component {
 
     SchoolCheckboxChange = (event) => {
 
-        if(this.state.showSchool)
-            this.setState({showSchool:false});
+        if (this.state.showSchool)
+            this.setState({showSchool: false});
         else
-            this.setState({showSchool:true});
+            this.setState({showSchool: true});
         if (event.target.checked)
             this.initSchoolMarkers(this.state.map);
         else
@@ -712,42 +698,40 @@ class MapContainer extends Component {
 
     HotTopicCheckboxChange = (event) => {
 
-        if(this.state.showHotTopic)
-            this.setState({showHotTopic:false});
+        if (this.state.showHotTopic)
+            this.setState({showHotTopic: false});
         else
-            this.setState({showHotTopic:true});
+            this.setState({showHotTopic: true});
         if (event.target.checked) {
-            if(this.state.month===3||this.state.month===4)
+            if (this.state.month === 3 || this.state.month === 4)
                 this.initHotTopicMarkers(this.state.map);
-            if(this.state.month===3)
+            if (this.state.month === 3)
                 this.state.discriminations.map(discrimination => discrimination.setMap(null))
-            else if(this.state.month===4)
+            else if (this.state.month === 4)
                 this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
-        }
-        else {
+        } else {
             this.state.toiletpapers.map(toiletpaper => toiletpaper.setMap(null))
             this.state.discriminations.map(discrimination => discrimination.setMap(null))
         }
-        console.log("toilet paper"+this.state.toiletpapers)
+        console.log("toilet paper" + this.state.toiletpapers)
 
     };
 
-                render()
-                {
-                    const {classes} = this.props;
+    render() {
+        const {classes} = this.props;
 
-                    //if(this.state.loaded===true)
+        //if(this.state.loaded===true)
 
-                    return (
-                        <div>
-                            <div className={classes.mapContainer}>
-                                < InnerMap id="map"
-                                           options={{center: {lat: -25.5, lng: 132.5}, zoom: 5, styles: mapStyles}}
-                                           onMapLoad={(map) => this.initBorder(map)
-                                           } changeBorder={this.changeBorder}/>
+        return (
+            <div>
+                <div className={classes.mapContainer}>
+                    < InnerMap id="map"
+                               options={{center: {lat: -25.5, lng: 132.5}, zoom: 5, styles: mapStyles}}
+                               onMapLoad={(map) => this.initBorder(map)
+                               } changeBorder={this.changeBorder}/>
 
                 </div>
-{/*                <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
+                {/*                <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
                     <Paper elevation={3} >
                         <ExpansionPanel>
                             <ExpansionPanelSummary
@@ -814,8 +798,7 @@ class MapContainer extends Component {
                             </div>*/}
 
 
-
-{/*                            <div style={{display:'flex', position: 'absolute',bottom: '180px', left: '20px'}}>
+                {/*                            <div style={{display:'flex', position: 'absolute',bottom: '180px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.showHotTopic}
                                     onChange={this.HotTopicCheckboxChange}
@@ -845,26 +828,32 @@ class MapContainer extends Component {
                                 </p>
                             </div>*/}
 
+                {/*
                             <div style={{width:"150px", height:"50px", display:this.state.show,position: 'absolute',bottom:this.state.bottom, left: this.state.left}}>
-                                <div>
-                                    <p>cases: {this.state.cases}</p><br/>
-                                    <p>tweets: {parseInt(this.state.happy)+parseInt(this.state.sad)+parseInt(this.state.angry)+parseInt(this.state.fear)}</p><br/>
-                                </div>
-                                <PieChart data={[["happy", this.state.happy], ["Sad", this.state.sad],["Angry", this.state.angry],["Fear", this.state.fear]]} />
+*/}
+                <div style={{position: 'absolute', top: '150px', left: '200px'}}>
 
-                                <RadialChart
-                                    data={[{angle: 1}, {angle: 5}, {angle: 2}]}
-                                    width={300}
-                                    height={300} />
+                    {this.state.scale === 'state' &&
+                    <p style={{color:'#FFFFFF'}}>state: {this.state.locationInfo.state}</p>}
+                    {this.state.scale === 'suburb' &&
+                     <p style={{color:'#FFFFFF'}}>suburb: {this.state.locationInfo.suburb+"  "}</p>}
 
-                            </div>
-                            <div style={{display:'flex', position: 'absolute',bottom: '80px', right: '90px'}}>
-                            <Colorlegend/>
-                            </div>
+                     <p style={{color:'#FFFFFF'}}>
+                     cases: {this.state.cases+" "}</p>
 
 
+                    <Piechart pieAxis={this.state.pieAxis} pieData={this.state.pieData}/>
 
-                           {/* <FormControl>
+                    <Piechart pieAxis={this.state.pie2Axis} pieData={this.state.pie2Data}/>
+
+
+                </div>
+                <div style={{display: 'flex', position: 'absolute', bottom: '80px', right: '90px'}}>
+                    <Colorlegend/>
+                </div>
+
+
+                {/* <FormControl>
                                 <InputLabel shrink id="demo-simple-select-placeholder-label-label">
                                     Area
                                 </InputLabel>
@@ -886,40 +875,40 @@ class MapContainer extends Component {
                             </FormControl>*/}
 
 
-                            <div style={{position: 'absolute', bottom: '60px', left: '30px', width: '700px'}}>
+                <div style={{position: 'absolute', bottom: '60px', left: '30px', width: '700px'}}>
 
-                                <Typography style={{color:'#FFFFFF'}} id="discrete-slider-always" gutterBottom>
-                                    Date selection
-                                </Typography>
-                                <AirbnbSlider
-                                    getAriaValueText={valuetext}
-                                    aria-labelledby="discrete-slider-always"
-                                    ThumbComponent={AirbnbThumbComponent}
-                                    marks={marks}
-                                    defaultValue={0}
-                                    valueLabelDisplay="on"
-                                    onChange={this.DateChange}
-                                    max={120}
-                                />
-                                <div style={{
-                                    backgroundColor: '#fff'
-                                }}>
-                                    <Snackbar open={this.state.setOpen} autoHideDuration={6000} onClose={this.handleClose}>
-                                        <Alert onClose={this.handleClose} severity="warning">
-                                            {this.state.keyDateText}
-                                        </Alert>
-                                    </Snackbar>
-                                </div>
-                            </div>
+                    <Typography style={{color: '#FFFFFF'}}>
+                        Day/Month   {"  "+this.state.dateInfo.day}/{this.state.dateInfo.month}
+                    </Typography>
+
+                    <AirbnbSlider
+                        getAriaValueText={valuetext}
+                        aria-labelledby="discrete-slider-always"
+                        ThumbComponent={AirbnbThumbComponent}
+                        marks={marks}
+                        defaultValue={0}
+                        valueLabelDisplay="on"
+                        onChange={this.DateChange}
+                        max={152}
+                    />
+
+                    <div style={{
+                        backgroundColor: '#fff'
+                    }}>
+                        <Snackbar open={this.state.setOpen} autoHideDuration={6000} onClose={this.handleClose}>
+                            <Alert onClose={this.handleClose} severity="warning">
+                                {this.state.keyDateText}
+                            </Alert>
+                        </Snackbar>
+                    </div>
+                </div>
 
 
+            </div>
+        )
+        /* else
+             return (<div>loading...</div>)*/
+    }
+}
 
-
-                        </div>
-                    )
-                   /* else
-                        return (<div>loading...</div>)*/
-                }
-            }
-
-        export default withStyles(styles)(MapContainer);
+export default withStyles(styles)(MapContainer);
