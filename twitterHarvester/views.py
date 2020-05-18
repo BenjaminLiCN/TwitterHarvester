@@ -1,3 +1,5 @@
+import string
+
 from django.http import JsonResponse
 from couchdb import Server
 server = Server('http://admin:password@172.26.132.166:5984//')
@@ -57,7 +59,7 @@ def confirmedAll(request):
         mydic = {}
         for i in key_value.value['doc']:
             # print(i)
-            mydic[i['Suburb']] = i['cases']
+            mydic[i['Suburb'].upper()] = i['cases']
             print(mydic)
         result[key_value.key] = mydic
     response = JsonResponse(result)
