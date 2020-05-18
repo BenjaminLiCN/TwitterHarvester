@@ -2,13 +2,15 @@ import string
 
 from django.http import JsonResponse
 from couchdb import Server
-server = Server('http://admin:password@172.26.132.166:5984//')
-db = server['hospital']
 
-#for key_value in db.view('testReduce/new-view',group = True):
+server = Server('http://admin:password@172.26.132.166:5984//')
+# db = server['hospital']
+
+
+# for key_value in db.view('testReduce/new-view',group = True):
 #   print(key_value.key, key_value.value)
-#hospital_json = db['c12415e43341f595eac3f83c5201be97']
-#print(hospital_json)
+# hospital_json = db['c12415e43341f595eac3f83c5201be97']
+# print(hospital_json)
 def profile(request):
     data = {
         'name': 'Vitor',
@@ -18,14 +20,16 @@ def profile(request):
     }
     return JsonResponse(data)
 
+
 def helloworld(request):
     data = {
         'name': 'helloword',
     }
     return JsonResponse(data)
 
+
 def hospital(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['hospital']
     hospital_json = db['c12415e43341f595eac3f83c5202b461']
     response = JsonResponse(hospital_json)
@@ -33,8 +37,9 @@ def hospital(request):
     response["Access-Control-Allow-Credentials"] = True
     return response
 
+
 def school(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['school']
     school_json = db['c12415e43341f595eac3f83c5202d6df']
     response = JsonResponse(school_json)
@@ -42,8 +47,9 @@ def school(request):
     response["Access-Control-Allow-Credentials"] = True
     return response
 
+
 def confirmed(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['confirmed']
     school_json = db['0510']
     response = JsonResponse(school_json)
@@ -51,8 +57,9 @@ def confirmed(request):
     response["Access-Control-Allow-Credentials"] = True
     return response
 
+
 def confirmedAll(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['confirmed']
     result = {}
     for key_value in db.view('confirmed/confirmed-view', group=False):
@@ -67,8 +74,9 @@ def confirmedAll(request):
     response["Access-Control-Allow-Credentials"] = True
     return response
 
+
 def confirmedAllState(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['state_confirmed']
     result = {}
     for key_value in db.view('state_confirmed/state-confirmed-view', group=False):
@@ -81,8 +89,9 @@ def confirmedAllState(request):
     response["Access-Control-Allow-Credentials"] = True
     return response
 
+
 def suburbAndEmotion(request):
-    server = Server('http://admin:password@172.26.131.49:5984//')
+    # server = Server('http://admin:password@172.26.131.49:5984//')
     db = server['all_tweets']
     result = {}
     resultlist = []
@@ -91,10 +100,7 @@ def suburbAndEmotion(request):
     for key_value in db.view('state/suburb-view', group=True):
 
         single_result = {}
-        if len(str(key_value.key[2]['day'])) == 1:
-            mydate = str('0' + str(key_value.key[2]['month']) +'0'+ str(key_value.key[2]['day']))
-        else:
-            mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
+        mydate = format_date(key_value.key[2])
         suburb = key_value.key[1]
         # if suburb == 'bayside' and mydate =='0513':
         #    print(key_value)
@@ -138,7 +144,7 @@ def suburbAndEmotion(request):
 
 
 def suburbAndHottopic(request):
-    server = Server('http://admin:password@172.26.132.166:5984//')
+    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['all_tweets']
     result = {}
     resultlist = []
@@ -146,10 +152,7 @@ def suburbAndHottopic(request):
     dateDict = {}
     for key_value in db.view('hottopic/hottopic-view', group=True):
         single_result = {}
-        if len(str(key_value.key[1]['day']))==1:
-            mydate = str('0' + str(key_value.key[1]['month']) + '0'+str(key_value.key[1]['day']))
-        else:
-            mydate = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
+        mydate = format_date(key_value.key[1])
         suburb = key_value.key[0]
         if mydate in doc.keys():
             dateDict = doc[mydate]
@@ -183,3 +186,29 @@ def suburbAndHottopic(request):
     return response
 
 
+def suburb_avg_emotion():
+    # server = Server('http://admin:password@172.26.131.49:5984//')
+    db = server['vic_timeline']
+    result = {}
+    doc = {}
+    for key_value in db.view('vic_sub_avg_emotion/vic_sub_avg_emotion', group=True):
+        date = format_date(key_value.key[0])
+        suburb = key_value.key[1]
+        avg_emotion = round(key_value.value, 2)
+        if date not in doc.keys():
+            all_suburbs_data = {suburb: avg_emotion}
+            doc[date] = all_suburbs_data
+        else:
+            all_suburbs_data = doc[date]
+            all_suburbs_data[suburb] = avg_emotion
+    result['doc'] = doc
+    # to be finished
+    print(result)
+
+
+def format_date(date):
+    if len(str(date['day'])) == 1:
+        formatted_date = str('0' + str(date['month']) + '0' + str(date['day']))
+    else:
+        formatted_date = str('0' + str(date['month']) + str(date['day']))
+    return formatted_date
