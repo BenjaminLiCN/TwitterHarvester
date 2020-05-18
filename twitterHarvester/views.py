@@ -89,7 +89,10 @@ def suburbAndEmotion(request):
     for key_value in db.view('state/suburb-view', group=True):
 
         single_result = {}
-        mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
+        if len(str(key_value.key[2]['day'])):
+            mydate = str('0' + str(key_value.key[2]['month']) +'0'+ str(key_value.key[2]['day']))
+        else:
+            mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
         suburb = key_value.key[1]
         # if suburb == 'bayside' and mydate =='0513':
         #    print(key_value)
@@ -141,7 +144,10 @@ def suburbAndHottopic(request):
     dateDict = {}
     for key_value in db.view('hottopic/hottopic-view', group=True):
         single_result = {}
-        mydate = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
+        if len(str(key_value.key[1]['day']))==1:
+            mydate = str('0' + str(key_value.key[1]['month']) + '0'+str(key_value.key[1]['day']))
+        else:
+            mydate = str('0' + str(key_value.key[1]['month']) + str(key_value.key[1]['day']))
         suburb = key_value.key[0]
         if mydate in doc.keys():
             dateDict = doc[mydate]
