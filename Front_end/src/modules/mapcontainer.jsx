@@ -12,9 +12,19 @@ import {stateCaseDate, suburbCaseDate, searchSuburb, searchState, searchState2} 
 
 import {colorOnConfirmed} from '../methods/defineColor'
 import {dayFromStr, monthFromStr, dayFromValue, strFromDate} from '../methods/DateTransfer'
-
+import clsx from 'clsx';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Divider from '@material-ui/core/Divider';
 import Piechart from './piechart'
-
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import DirectionsIcon from '@material-ui/icons/Directions';
+import InputBase from '@material-ui/core/InputBase';
 import mapStyles from '../resources/mapstyle.json';
 import InnerMap from './innermap';
 import * as location from './location'
@@ -40,19 +50,9 @@ const styles = theme => ({
         boxShadow: "0 2px 8px 0 #d7d7d7"
     },
     searchPanel: {
-        display: 'flex',
-        flexWrap: 'wrap',
-
-        '& > *': {
-            margin: theme.spacing(1),
-            width: theme.spacing(300),
-            height: theme.spacing(16),
-        },
-        width: theme.spacing(50),
-        height: theme.spacing(100),
         position: 'fixed',
-        top: '30%',
-        left: '60%',
+        top: '22%',
+        left: '76%',
     },
     heading: {
         fontSize: theme.typography.pxToRem(15),
@@ -257,6 +257,8 @@ class MapContainer extends Component {
             opacity: '30%',
             level: 3,
             searchText: '',
+            expand: false,
+            lifted: false
         };
         this.initBorder = this.initBorder.bind(this)
         this.changeBorder = this.changeBorder.bind(this);
@@ -273,8 +275,13 @@ class MapContainer extends Component {
         this.setState({searchText: event.target.value});
     }
 
+    expandPanel = () => {
+        this.setState({expand: true});
+    }
+
     focusSearchArea = () => {
         let text = this.state.searchText;
+        this.setState({expand: false});
         //todo: auto focus
     }
 
@@ -283,7 +290,8 @@ class MapContainer extends Component {
     }
 
     onLeaveSearch = () => {
-        this.setState({opacity: '30%'});
+        this.setState({opacity: '20%'});
+        this.setState({expand: false});
     }
 
     handleClick = () => {
@@ -296,6 +304,8 @@ class MapContainer extends Component {
         }
         this.setState({setOpen: false});
         this.setState({showKeyDate: false});
+        this.setState({lifted: false});
+
     };
 
     initBorder(map) {
@@ -602,7 +612,10 @@ class MapContainer extends Component {
         for (let day = 0; day < keyDates.length; day++) {
             if (keyDates[day].value === value) {
                 this.handleClick();
-                this.setState({showKeyDate: true, keyDateText: keyDates[day].info})
+                this.setState({showKeyDate: true, keyDateText: keyDates[day].info});
+                if (value === 120) {
+                    this.setState({lifted: true});
+                }
             }
         }
         if (this.state.showHotTopic)
@@ -694,62 +707,39 @@ class MapContainer extends Component {
                                } changeBorder={this.changeBorder}/>
 
                 </div>
-                {/*                <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
+                <div className={classes.searchPanel} style={{opacity: this.state.opacity}} onMouseOver={this.onHoverSearch} onMouseLeave={this.onLeaveSearch}>
                     <Paper elevation={3} >
-                        <ExpansionPanel>
+                        <ExpansionPanel expanded={this.state.expand}>
                             <ExpansionPanelSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1c-content"
                                 id="panel1c-header"
+                                onMouseOver={this.expandPanel}
+                                style={{backgroundColor:'#7268A6'}}
                             >
                                 <div className={classes.column}>
                                     <Typography className={classes.heading}>Search</Typography>
                                 </div>
-                                <div className={classes.column}>
-                                    <Typography className={classes.secondaryHeading}>Expand</Typography>
-                                </div>
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.details}>
-                                <div style={{flex: 2}}>
-                                    <FormControl component="fieldset">
-                                        <InputLabel id="demo-simple-select-label">Level</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={this.state.level}
-                                            onChange={this.handleLevel}
-                                        >
-                                            <MenuItem value={1}>State</MenuItem>
-                                            <MenuItem value={2}>City</MenuItem>
-                                            <MenuItem value={3}>Suburb</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                <div className={classes.column}>
+                                    <InputBase
+                                        className={classes.input}
+                                        placeholder="Input area"
+                                        onChange={this.handleSearchText}
+                                    />
 
-                                </div>
-                                <div style={{flex: 5}}>
-                                    <FormControl component="fieldset">
-                                        <div style={{flexDirection: 'row'}}>
-                                            <InputBase
-                                                className={classes.input}
-                                                placeholder="Enter location name"
-                                                inputProps={{ 'aria-label': 'search location' }}
-                                                onChange={this.handleSearchText}
-                                            />
-
-                                        </div>
-                                    </FormControl>
                                 </div>
                             </ExpansionPanelDetails>
                             <Divider />
                             <ExpansionPanelActions>
-                                <Button size="small">Cancel</Button>
                                 <IconButton type="submit" className={classes.iconButton} aria-label="search" onClick={this.focusSearchArea}>
                                     <SearchIcon />
                                 </IconButton>
                             </ExpansionPanelActions>
                         </ExpansionPanel>
                     </Paper>
-                </div>*/}
+                </div>
                 {/*                          <div style={{display:'flex', position: 'absolute',bottom: '220px', left: '20px'}}>
                                 <Checkbox
                                     checked={this.state.clearStyle}
@@ -857,8 +847,13 @@ class MapContainer extends Component {
                     <div style={{
                         backgroundColor: '#fff'
                     }}>
-                        <Snackbar open={this.state.setOpen} autoHideDuration={6000} onClose={this.handleClose}>
+                        <Snackbar open={this.state.setOpen && !this.state.lifted} autoHideDuration={6000} onClose={this.handleClose}>
                             <Alert onClose={this.handleClose} severity="warning">
+                                {this.state.keyDateText}
+                            </Alert>
+                        </Snackbar>
+                        <Snackbar open={this.state.setOpen && this.state.lifted} autoHideDuration={6000} onClose={this.handleClose}>
+                            <Alert onClose={this.handleClose} severity="success">
                                 {this.state.keyDateText}
                             </Alert>
                         </Snackbar>
@@ -869,6 +864,8 @@ class MapContainer extends Component {
             </div>
         )
     }
+
+
 }
 
 export default withStyles(styles)(MapContainer);
