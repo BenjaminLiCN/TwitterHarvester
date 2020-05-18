@@ -89,7 +89,7 @@ def suburbAndEmotion(request):
     for key_value in db.view('state/suburb-view', group=True):
 
         single_result = {}
-        if len(str(key_value.key[2]['day'])):
+        if len(str(key_value.key[2]['day'])) == 1:
             mydate = str('0' + str(key_value.key[2]['month']) +'0'+ str(key_value.key[2]['day']))
         else:
             mydate = str('0' + str(key_value.key[2]['month']) + str(key_value.key[2]['day']))
