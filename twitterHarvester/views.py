@@ -65,7 +65,10 @@ def confirmedAllState(request):
     db = server['state_confirmed']
     result = {}
     for key_value in db.view('state_confirmed/state-confirmed-view', group=False):
-        result[key_value.key] = key_value.value['doc']
+        mydic = {}
+        for i in key_value.value['doc']:
+            mydic[i['state']] = i['cases']
+        result[key_value.key] = mydic
     response = JsonResponse(result)
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Credentials"] = True
