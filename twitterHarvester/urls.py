@@ -24,6 +24,7 @@ from .views import confirmedAll
 from .views import confirmedAllState
 from .views import suburbAndEmotion
 from .views import suburbAndHottopic
+from .views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,5 +36,6 @@ urlpatterns = [
     path('confirmedAllState/', confirmedAllState, name='confirmedAllState'),
     path('suburbAndEmotion/', suburbAndEmotion, name='suburbAndEmotion'),
     path('suburbAndHottopic/', suburbAndHottopic, name='suburbAndHottopic'),
+    path('suburb_avg_emotion/', suburb_avg_emotion, name='suburb_avg_emotion'),
     path('', helloworld, name='helloworld')
 ]

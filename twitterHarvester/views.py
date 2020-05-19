@@ -202,8 +202,10 @@ def suburb_avg_emotion():
             all_suburbs_data = doc[date]
             all_suburbs_data[suburb] = avg_emotion
     result['doc'] = doc
-    # to be finished
-    print(result)
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
 
 
 def format_date(date):
