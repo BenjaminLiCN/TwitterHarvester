@@ -186,7 +186,7 @@ def suburbAndHottopic(request):
     return response
 
 
-def suburb_avg_emotion():
+def suburb_avg_emotion(request):
     # server = Server('http://admin:password@172.26.131.49:5984//')
     db = server['all_tweets']
     result = {}
