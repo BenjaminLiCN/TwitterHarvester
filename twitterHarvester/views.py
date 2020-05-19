@@ -188,7 +188,7 @@ def suburbAndHottopic(request):
 
 def suburb_avg_emotion():
     # server = Server('http://admin:password@172.26.131.49:5984//')
-    db = server['vic_timeline']
+    db = server['all_tweets']
     result = {}
     doc = {}
     for key_value in db.view('vic_sub_avg_emotion/vic_sub_avg_emotion', group=True):
