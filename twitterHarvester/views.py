@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from couchdb import Server
 
 server = Server('http://admin:password@172.26.132.166:5984//')
+
+
 # db = server['hospital']
 
 
@@ -97,7 +99,7 @@ def suburbAndEmotion(request):
     resultlist = []
     doc = {}
     dateDict = {}
-    for key_value in db.view('state/suburb-view', group=True):
+    for key_value in db.view('emotions/vic_sub_emotions', group=True):
 
         single_result = {}
         mydate = format_date(key_value.key[2])
@@ -150,7 +152,7 @@ def suburbAndHottopic(request):
     resultlist = []
     doc = {}
     dateDict = {}
-    for key_value in db.view('hottopic/hottopic-view', group=True):
+    for key_value in db.view('hot_topics/vic_sub_hot_topics', group=True):
         single_result = {}
         mydate = format_date(key_value.key[1])
         suburb = key_value.key[0]
@@ -201,6 +203,83 @@ def suburb_avg_emotion(request):
         else:
             all_suburbs_data = doc[date]
             all_suburbs_data[suburb] = avg_emotion
+    result['doc'] = doc
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
+
+
+def state_hot_topics(request):
+    db = server['all_tweets']
+    result = {}
+    doc = {}
+    for key_value in db.view('hot_topics/state_hot_topics', group=True):
+        date = format_date(key_value.key[0])
+        state = key_value.key[1]
+        topic = key_value.key[2]
+        if date not in doc.keys():
+            topics = [{"word": topic, "num": key_value.value}]
+            state_topics = dict(state=topics)
+            doc[date] = state_topics
+        else:
+            state_topics = doc[date]
+            if state not in state_topics.keys():
+                topic_list = [{"word": topic, "num": key_value.value}]
+                state_topics[state] = topic_list
+            else:
+                topic_list = state_topics[state]
+                topic_list.append({"word": topic, "num": key_value.value})
+            doc[date] = state_topics
+    result['doc'] = doc
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
+
+
+def state_emotions(request):
+    db = server['all_tweets']
+    result = {}
+    doc = {}
+    for key_value in db.view('emotions/state_emotions', group=True):
+        date = format_date(key_value.key[0])
+        state = key_value.key[1]
+        emotion = key_value.key[2]
+        if date not in doc.keys():
+            emotions = [{"emotion": emotion, "num": key_value.value}]
+            state_emotion = dict(state=emotions)
+            doc[date] = state_emotion
+        else:
+            state_emotion = doc[date]
+            if state not in state_emotion.keys():
+                emotions = [{"emotion": emotion, "num": key_value.value}]
+                state_emotion[state] = emotions
+            else:
+                emotions = state_emotion[state]
+                emotions.append({"emotion": emotion, "num": key_value.value})
+            doc[date] = state_emotion
+    result['doc'] = doc
+    response = JsonResponse(result)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Credentials"] = True
+    return response
+
+
+def state_avg_emotion(request):
+    db = server['all_tweets']
+    result = {}
+    doc = {}
+    for key_value in db.view('state_avg_emotion/state_avg_emotion', group=True):
+        date = format_date(key_value.key[0])
+        state = key_value.key[1]
+        avg_emotion = round(key_value.value, 2)
+        if date not in doc.keys():
+            all_state_data = {state: avg_emotion}
+            doc[date] = all_state_data
+        else:
+            all_state_data = doc[date]
+            all_state_data[state] = avg_emotion
     result['doc'] = doc
     response = JsonResponse(result)
     response["Access-Control-Allow-Origin"] = "*"

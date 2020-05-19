@@ -21,6 +21,22 @@ def suburb_avg_emotion():
     print(result)
 
 
+def state_avg_emotion():
+    result = {}
+    doc = {}
+    for key_value in db.view('state_avg_emotion/state_avg_emotion', group=True):
+        date = format_date(key_value.key[0])
+        state = key_value.key[1]
+        avg_emotion = round(key_value.value, 2)
+        if date not in doc.keys():
+            all_state_data = {state: avg_emotion}
+            doc[date] = all_state_data
+        else:
+            all_state_data = doc[date]
+            all_state_data[state] = avg_emotion
+    result['doc'] = doc
+    print(result)
+
 def format_date(date):
     if len(str(date['day'])) == 1:
         formatted_date = str('0' + str(date['month']) + '0' + str(date['day']))
@@ -29,4 +45,3 @@ def format_date(date):
     return formatted_date
 
 
-suburb_avg_emotion()
