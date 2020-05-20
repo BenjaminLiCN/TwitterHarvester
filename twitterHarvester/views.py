@@ -219,8 +219,9 @@ def state_hot_topics(request):
         state = key_value.key[1]
         topic = key_value.key[2]
         if date not in doc.keys():
+            state_topics = {}
             topics = [{"word": topic, "num": key_value.value}]
-            state_topics = dict(state=topics)
+            state_topics[state] = topics
             doc[date] = state_topics
         else:
             state_topics = doc[date]
@@ -247,8 +248,9 @@ def state_emotions(request):
         state = key_value.key[1]
         emotion = key_value.key[2]
         if date not in doc.keys():
+            state_emotion = {}
             emotions = [{"emotion": emotion, "num": key_value.value}]
-            state_emotion = dict(state=emotions)
+            state_emotion[state] = emotions
             doc[date] = state_emotion
         else:
             state_emotion = doc[date]
