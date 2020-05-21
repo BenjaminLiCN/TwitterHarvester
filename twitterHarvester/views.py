@@ -3,7 +3,10 @@ import string
 from django.http import JsonResponse
 from couchdb import Server
 
-server = Server('http://admin:password@172.26.132.166:5984//')
+try:
+    server = Server('http://admin:password@172.26.132.166:5984//')
+except Exception:
+    server = Server('http://admin:password@172.26.130.218:5984//')
 
 
 # db = server['hospital']
