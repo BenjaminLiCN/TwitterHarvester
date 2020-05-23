@@ -38,6 +38,9 @@ import {searchState3,transState} from './scale'
 import {withStyles, makeStyles} from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
+import {get} from "echarts/src/component/toolbox/featureManager";
+
+import Geocode from "react-geocode";
 
 
 const styles = theme => ({
@@ -53,7 +56,7 @@ const styles = theme => ({
     searchPanel: {
         position: 'fixed',
         top: '22%',
-        left: '76%',
+        left: '82%',
     },
     heading: {
         fontSize: theme.typography.pxToRem(15),
@@ -274,7 +277,16 @@ class MapContainer extends Component {
     focusSearchArea = () => {
         let text = this.state.searchText;
         this.setState({expand: false});
-        //todo: auto focus
+        Geocode.fromAddress(text).then(
+            response => {
+                const { lat, lng } = response.results[0].geometry.location;
+                this.state.map.setCenter({lat, lng});
+                console.log("lat lng"+lat+" "+lng)
+            },
+            error => {
+                console.error(error);
+            }
+        );
     }
 
     onHoverSearch = () => {
@@ -303,6 +315,11 @@ class MapContainer extends Component {
     initBorder(map) {
 
         const that = this;
+
+        Geocode.setApiKey("AIzaSyCb8v3J9mTRdgCSEo0unZYWM4HlmppEy7E");
+        Geocode.setLanguage("en");
+        Geocode.setRegion("au");
+        Geocode.enableDebug();
 
         //map.data.loadGeoJson('https://raw.githubusercontent.com/rowanhogan/australian-states/master/states.geojson')
 
@@ -704,7 +721,7 @@ class MapContainer extends Component {
             <div>
                 <div className={classes.mapContainer}>
                     < InnerMap id="map"
-                               options={{center: {lat: -25.5, lng: 132.5}, zoom: 5, styles: mapStyles}}
+                               options={{center: {lat: -25.5, lng: 136.5}, zoom: 5, styles: mapStyles}}
                                onMapLoad={(map) => this.initBorder(map)
                                } changeBorder={this.changeBorder}/>
 
@@ -785,7 +802,7 @@ class MapContainer extends Component {
                 {/*
                             <div style={{width:"150px", height:"50px", display:this.state.show,position: 'absolute',bottom:this.state.bottom, left: this.state.left}}>
 */}
-                <div style={{position: 'absolute', top: '150px', left: '200px'}}>
+                <div style={{position: 'absolute', top: '150px', left: '160px'}}>
 
                     {this.state.scale === 'state' &&
                      <p>state: {this.state.locationInfo.state}</p>}
@@ -802,7 +819,7 @@ class MapContainer extends Component {
                     </div>
 
                 </div>
-                <div style={{display: 'flex', position: 'absolute', bottom: '80px', right: '90px'}}>
+                <div style={{display: 'flex', position: 'absolute', bottom: '80px', right: '100px'}}>
                     <Colorlegend/>
                 </div>
 
