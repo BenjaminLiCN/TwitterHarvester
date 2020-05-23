@@ -18,6 +18,7 @@ export default function Piechart(props) {
                 //responsive: false,
                 maintainAspectRatio: false,
                 legend: {
+                    display: false,
                     labels: {
                         boxWidth: 10,
                             fontColor: 'white' //set your desired color

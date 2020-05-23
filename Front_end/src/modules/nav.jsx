@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {AppBar, withStyles,Toolbar, Typography, Tabs, Tab} from '@material-ui/core'
 
 import MapContainer from './mapcontainer'
-import Summary from './summary'
 import Analysis from './analysis'
 import Team from './team'
 
@@ -14,8 +13,11 @@ class Nav extends Component {
             value: 0,
             statecases: false,
             suburbcases: false,
+            statetopic:false,
+            stateemotion: false,
             suburbtopic: false,
-            suburbemotion : false
+            suburbemotion : false,
+            twitterday:[],
         }
         ;
     }
@@ -37,6 +39,18 @@ class Nav extends Component {
                 this.setState({suburbcases: suburbdata})
             }).catch(console.log)
 
+        fetch('http://172.26.131.49:8081/state_hot_topics/')
+            .then(res => res.json())
+            .then(statedata => {
+                this.setState({statetopic: statedata.doc})
+            }).catch(console.log)
+
+        fetch('http://172.26.131.49:8081/state_emotions/')
+            .then(res => res.json())
+            .then(statedata => {
+                this.setState({stateemotion: statedata.doc})
+            }).catch(console.log)
+
         fetch('http://172.26.131.49:8081/suburbAndHottopic/')
             .then(res => res.json())
             .then(suburbdata => {
@@ -48,6 +62,19 @@ class Nav extends Component {
             .then(suburbdata => {
                 this.setState({suburbemotion: suburbdata.doc})
             }).catch(console.log)
+
+        fetch('http://172.26.131.49:8081/state_avg_emotion/')
+            .then(res => res.json())
+            .then(statedata => {
+                this.setState({stateavg: statedata.doc})
+            }).catch(console.log)
+
+        fetch('http://172.26.131.49:8081/suburb_avg_emotion/')
+            .then(res => res.json())
+            .then(suburbdata => {
+                this.setState({suburbavg: suburbdata.doc})
+            }).catch(console.log)
+
 
     }
 
@@ -72,8 +99,8 @@ class Nav extends Component {
                     </Toolbar>
                 </AppBar>
 
-                {value === 0 && <MapContainer statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion}/>}
-                {value === 1 && <Analysis statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion}/>}
+                {value === 0 && <MapContainer statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion} statetopic={this.state.statetopic} stateemotion={this.state.stateemotion} />}
+                {value === 1 && <Analysis statecases={this.state.statecases} suburbcases={this.state.suburbcases} suburbtopic={this.state.suburbtopic} suburbemtion={this.state.suburbemotion} statetopic={this.state.statetopic} stateemotion={this.state.stateemotion} stateavg={this.state.stateavg} suburbavg={this.state.suburbavg}/>}
                 {value === 2 && <Team/>}
             </div>
         )

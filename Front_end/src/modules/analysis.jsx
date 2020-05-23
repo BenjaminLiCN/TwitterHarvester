@@ -9,8 +9,10 @@ import {
     suburbName,
     stateName,
     searchState,
-    twitterDate
+    transState,
+    twitterDate,
 } from '../modules/scale'
+
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
@@ -26,9 +28,10 @@ export default function Analysis(props) {
     const [scale, setScale] = useState('suburb')
     const [area, setArea] = useState('ballarat')
     const [casesData, setcasesData] = useState([])
-    const [topicAxis, settopicAxis] = useState([])
     const [casesAxis, setcasesAxis] = useState([])
-    const [topicData, settopicData] = useState([])
+    const [avgAxis, setavgAxis] = useState([])
+    const [avgData, setavgData] = useState([])
+
 
     const [barAxis, setbarAxis] = useState([])
     const [barData, setbarData] = useState([])
@@ -38,8 +41,6 @@ export default function Analysis(props) {
 
 
     const [date, setDate] = useState('0513')
-    const [loaded, setloaded] = useState(false)
-
 
     const clearState = () => {
         casesAxis.length = 0
@@ -48,57 +49,51 @@ export default function Analysis(props) {
         barData.length = 0
         bar2Axis.length = 0
         bar2Data.length = 0
+        avgData.length=0
     }
 
     useEffect(() => {
 
+
     });
 
     const upload = (name, date) => {
-        console.log("uploading")
 
         clearState()
 
 
         if (scale === 'state') {
 
-            for (const datestr of stateCaseDate) {
+            try{
+                var low = transState.get(name)
 
-                props.statecases[datestr].forEach(day => {
-                        if (day.state === name) {
-                            setcasesAxis(casesAxis => [...casesAxis, datestr])
-                            setcasesData(casesData => [...casesData, day.cases]);
+                Object.keys(props.statecases).forEach
+                (
+                    day => {
+                        try {
+                            var cases = props.statecases[day][name]
+                            var avg = props.stateavg[day][low]
+                            setavgData(avgData => [...avgData, avg]);
+                            setcasesAxis(casesAxis => [...casesAxis, day])
+                            setcasesData(casesData => [...casesData, cases]);
+                        }catch (e) {
+
                         }
-                    }
-                )
+                    })
+
+            }catch (e) {
             }
 
-            setloaded(true)
-
-
-        } else if (scale === 'suburb') {
-
-            for (const datestr of suburbCaseDate) {
-
-                props.suburbcases[datestr].forEach(day => {
-                        if (day.Suburb === name) {
-                            setcasesAxis(casesAxis => [...casesAxis, datestr])
-                            setcasesData(casesData => [...casesData, day.cases]);
-                        }
-                    }
-                )
-            }
-
-            var low = name.toLowerCase()
-
-
-            var topic = props.suburbtopic[date][low]
             try {
 
+                var topic = props.statetopic[date][low]
+
                 topic.map(
-                    (t) => {
-                        setbarAxis(barAxis => [...barAxis, t.word])
-                        setbarData(barData => [...barData, t.num])
+                    (t,index) => {
+                        if(index<15){
+                            setbarAxis(barAxis => [...barAxis, t.word])
+                            setbarData(barData => [...barData, t.num])
+                        }
                     }
                 )
             } catch (e) {
@@ -106,8 +101,9 @@ export default function Analysis(props) {
             }
 
 
-            var emotion = props.suburbemtion[date][low]
             try {
+                var emotion = props.stateemotion[date][low]
+
                 emotion.map(
                     (t) => {
                         setbar2Axis(bar2Axis => [...bar2Axis, t.emotion])
@@ -119,24 +115,61 @@ export default function Analysis(props) {
             }
 
 
-            Object.keys(props.suburbtopic).forEach
-            (date => {
-                    var total = 0
-                    Object.keys(props.suburbtopic[date]).forEach
-                    (
-                        suburb => {
-                            var topic = props.suburbtopic[date][suburb]
-                            topic.map(
-                                (t) => {
-                                    total += Number(t.num)
-                                }
-                            )
+        } else if (scale === 'suburb') {
+
+
+            try {
+
+                var low = name.toLowerCase()
+
+                Object.keys(props.suburbcases).forEach
+                (
+                    day => {
+                        try {
+                            var cases = props.suburbcases[day][name]
+                            var avg = props.suburbavg[day][low]
+                            setavgData(avgData => [...avgData, avg]);
+                            setcasesAxis(casesAxis => [...casesAxis, day])
+                            setcasesData(casesData => [...casesData, cases]);
+                        }catch (e) {
+
                         }
-                    )
-                    var item1 = {x: date, y: total}
-                    //settopicData(topicData=>[...topicData, totalitem]);
-                }
-            )
+                })
+
+            } catch (e) {
+
+            }
+
+            try {
+
+                var topic = props.suburbtopic[date][low]
+
+                topic.map(
+                    (t,index) => {
+                        if(index<15){
+                        setbarAxis(barAxis => [...barAxis, t.word])
+                        setbarData(barData => [...barData, t.num])
+                        }
+                    }
+                )
+            } catch (e) {
+                console.log(e)
+            }
+
+
+            try {
+                var emotion = props.suburbemtion[date][low]
+
+                emotion.map(
+                    (t) => {
+                        setbar2Axis(bar2Axis => [...bar2Axis, t.emotion])
+                        setbar2Data(bar2Data => [...bar2Data, t.num])
+                    }
+                )
+            } catch (e) {
+                console.log(e)
+            }
+
         }
     }
 
@@ -156,11 +189,8 @@ export default function Analysis(props) {
 
     const timestamp = new Date('April 4 2020').getTime();
     const ONE_DAY = 86400000;
-    const Data = [
-        {angle: 1}, {angle: 5}, {angle: 2}
-    ]
-    const d1 = [1, 2, 3]
-    const d2 = [2, 4, 3]
+
+
     return (
         <div>
             <div style={{marginTop: '140px', marginLeft: '80px'}}>
@@ -168,9 +198,44 @@ export default function Analysis(props) {
                     <div style={{width: '600px', height: '200px', marginRight: '200px'}}>
                         <Line data={{
                             labels: casesAxis, datasets: [{
-                                data: casesData, backgroundColor: '#b39ddb',fill: false, label: 'cases',
+                                data: casesData, backgroundColor: 'rgba(229, 115, 115, 1)',fill: false, label: 'cases', yAxisID: 'cases'
+                            },
+                                {
+                                    data: avgData, backgroundColor: '#b39ddb',fill: false, label: 'avg', yAxisID: 'emotion'
+                                }
+                                ]
+                            }}  onElementsClick={elems => {
+                            var activePoint = elems[0];
+                            var data = activePoint._chart.data;
+                            var datasetIndex = activePoint._datasetIndex;
+                            var labels = data.labels;
+                            var index=activePoint._index;
+                            setDate(labels[index])
+                            upload(area,labels[index])
+                            }}
+                              options={{
+
+                            scales: {
+                            yAxes: [{
+                                id: 'cases',
+                                type: 'linear',
+                                position: 'left',
+                            }, {
+                                id: 'emotion',
+                                type: 'linear',
+                                position: 'right',
+                                ticks: {
+                                    max: 1,
+                                    min: -1
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date (M D)'
+                                }
                             }]
-                        }}/>
+                        }}}/>
                     </div>
 
                     <div>
@@ -217,13 +282,14 @@ export default function Analysis(props) {
                     <Bar data={{
                         labels: barAxis, datasets: [{
                             data: barData, backgroundColor: '#b39ddb',fill: false, label: 'twitter topic',
+
                         }]
                     }}/>
                 </div>
                     <div style={{width: '600px', height: '200px',marginLeft:'80px'}}>
                         <Bar data={{
                             labels: bar2Axis, datasets: [{
-                                data: bar2Data,backgroundColor: '#b39ddb', fill: false, label: 'twitter emition',
+                                data: bar2Data,backgroundColor: '#b39ddb', fill: false, label: 'twitter emotion',
                             }]
                         }}/>
                     </div>
