@@ -378,13 +378,12 @@ class MapContainer extends Component {
                 try {
                         cases=that.props.statecases[that.state.dateInfo.str][that.state.locationInfo.state]
                 } catch (e) {
-                    console.log(e)
                 }
             } else {
                 try {
                          cases=that.props.suburbcases[that.state.dateInfo.str][that.state.locationInfo.suburb]
                 } catch (e) {
-                    console.log(e)
+
                 }
             }
             that.setState({cases: cases})
@@ -403,7 +402,7 @@ class MapContainer extends Component {
                         var date = strFromDate(that.state.dateInfo.month, that.state.dateInfo.day)
 
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                     try {
@@ -421,7 +420,7 @@ class MapContainer extends Component {
                             }
                         )
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                     try {
@@ -440,7 +439,7 @@ class MapContainer extends Component {
                             }
                         )
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                 }
@@ -456,7 +455,7 @@ class MapContainer extends Component {
                         var emotion = that.props.suburbemtion[date][low]
 
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                     try {
@@ -472,7 +471,7 @@ class MapContainer extends Component {
                             }
                         )
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                     try {
@@ -488,7 +487,7 @@ class MapContainer extends Component {
                             }
                         )
                     } catch (e) {
-                        console.log(e)
+
                     }
 
                 }
@@ -510,7 +509,7 @@ class MapContainer extends Component {
                 try {
                     cases=that.props.statecases[that.state.dateInfo.str][searchState3.get(feature.getProperty('state_pid'))]
                 } catch (e) {
-                    console.log(e)
+
                 }
 
             } else if (that.state.scale === 'suburb') {
@@ -518,7 +517,7 @@ class MapContainer extends Component {
                 try {
                     cases=that.props.suburbcases[that.state.dateInfo.str][feature.getProperty('vic_lga__3')]
                 } catch (e) {
-                    console.log(e)
+
                 }
             }
 

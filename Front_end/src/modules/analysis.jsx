@@ -88,6 +88,8 @@ export default function Analysis(props) {
 
                 var topic = props.statetopic[date][low]
 
+
+
                 topic.map(
                     (t,index) => {
                         if(index<15){
@@ -97,7 +99,6 @@ export default function Analysis(props) {
                     }
                 )
             } catch (e) {
-                console.log(e)
             }
 
 
@@ -111,7 +112,6 @@ export default function Analysis(props) {
                     }
                 )
             } catch (e) {
-                console.log(e)
             }
 
 
@@ -144,16 +144,18 @@ export default function Analysis(props) {
 
                 var topic = props.suburbtopic[date][low]
 
+                console.log("date"+date+"wordddd"+topic[0].word)
+
                 topic.map(
                     (t,index) => {
-                        if(index<15){
+
                         setbarAxis(barAxis => [...barAxis, t.word])
                         setbarData(barData => [...barData, t.num])
-                        }
+
                     }
                 )
             } catch (e) {
-                console.log(e)
+
             }
 
 
@@ -167,7 +169,7 @@ export default function Analysis(props) {
                     }
                 )
             } catch (e) {
-                console.log(e)
+
             }
 
         }
@@ -205,14 +207,19 @@ export default function Analysis(props) {
                                 }
                                 ]
                             }}  onElementsClick={elems => {
-                            var activePoint = elems[0];
-                            var data = activePoint._chart.data;
-                            var datasetIndex = activePoint._datasetIndex;
-                            var labels = data.labels;
-                            var index=activePoint._index;
-                            setDate(labels[index])
-                            upload(area,labels[index])
-                            }}
+                            try {
+                                var activePoint = elems[0];
+                                var data = activePoint._chart.data;
+                                var datasetIndex = activePoint._datasetIndex;
+                                var labels = data.labels;
+                                var index = activePoint._index;
+                                setDate(labels[index])
+                                upload(area, labels[index])
+
+                            } catch (e) {
+
+                            }
+                        }}
                               options={{
 
                             scales: {
