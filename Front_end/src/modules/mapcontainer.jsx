@@ -104,17 +104,16 @@ const styles = theme => ({
 //3.15 aus 14-day qarantine for oversea returners 3.20 australia lockdown 3.23 aus cafes shutdown  3.30 victoria stage 3
 //5.13 stage 3 eased
 const keyDates = [
-    {value: 18, info: "human-to-human transmission confirmed"},
-    {value: 24, info: "Wuhan lockdown started"},
-    {value: 28, info: "global emergency declared"},
-    {value: 35, info: "travel ban issued for Chinese nationals"},
-    {value: 64, info: "toilet paper crisis in Australia"},
-    {value: 72, info: "Europe became new epicentre"},
-    {value: 79, info: "14-day quarantine needed for returners from overseas"},
-    {value: 84, info: "Australia closed its borders"},
-    {value: 86, info: "cafes shutdown"},
-    {value: 93, info: "stage 3 restrictions in place in Victoria"},
-    {value: 120, info: "restrictions lifted in Victoria"},
+    {value: 19, info: "human-to-human transmission confirmed"},
+    {value: 22, info: "Wuhan lockdown started"},
+    {value: 30, info: "global emergency declared"},
+    {value: 31, info: "travel ban issued for Chinese nationals"},
+    {value: 66, info: "toilet paper crisis in Australia"},
+    {value: 70, info: "Europe became new epicentre"},
+    {value: 74, info: "14-day quarantine needed for returners from overseas"},
+    {value: 79, info: "Australia closed its borders"},
+    {value: 82, info: "cafes shutdown"},
+    {value: 133, info: "stage 3 restrictions in place in Victoria"},
 ];
 
 const marks = [
