@@ -149,41 +149,27 @@ def suburbAndEmotion(request):
 
 
 def suburbAndHottopic(request):
-    # server = Server('http://admin:password@172.26.132.166:5984//')
     db = server['all_tweets']
     result = {}
-    resultlist = []
     doc = {}
-    dateDict = {}
     for key_value in db.view('hot_topics/vic_sub_hot_topics', group=True):
-        single_result = {}
-        mydate = format_date(key_value.key[1])
+        date = format_date(key_value.key[1])
         suburb = key_value.key[0]
-        if mydate in doc.keys():
-            dateDict = doc[mydate]
-            # print(dateDict)
-            if suburb in dateDict.keys():
-                suburbList = dateDict[suburb]
-                single_result['word'] = key_value.key[2]
-                single_result['num'] = key_value.value
-                suburbList.append(single_result)
-                dateDict[suburb] = suburbList
-            else:
-                suburbList = []
-                single_result['word'] = key_value.key[2]
-                single_result['num'] = key_value.value
-                suburbList.append(single_result)
-                dateDict[suburb] = suburbList
-            doc[mydate] = dateDict
+        topic = key_value.key[2]
+        if date not in doc.keys():
+            suburb_topics = {}
+            topics = [{"word": topic, "num": key_value.value}]
+            suburb_topics[suburb] = topics
+            doc[date] = suburb_topics
         else:
-            suburbList = []
-            single_result['word'] = key_value.key[2]
-            single_result['num'] = key_value.value
-            suburbList.append(single_result)
-            dateDict[suburb] = suburbList
-            # dateList = []
-            # dateList.append(dateDict)
-            doc[mydate] = dateDict
+            suburb_topics = doc[date]
+            if suburb not in suburb_topics.keys():
+                topic_list = [{"word": topic, "num": key_value.value}]
+                suburb_topics[suburb] = topic_list
+            else:
+                topic_list = suburb_topics[suburb]
+                topic_list.append({"word": topic, "num": key_value.value})
+            doc[date] = suburb_topics
     result['doc'] = doc
     response = JsonResponse(result)
     response["Access-Control-Allow-Origin"] = "*"
