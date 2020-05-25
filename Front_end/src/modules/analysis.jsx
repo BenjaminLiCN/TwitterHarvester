@@ -200,10 +200,10 @@ export default function Analysis(props) {
                     <div style={{width: '600px', height: '200px', marginRight: '200px'}}>
                         <Line data={{
                             labels: casesAxis, datasets: [{
-                                data: casesData, backgroundColor: 'rgba(229, 115, 115, 1)',fill: false, label: 'cases', yAxisID: 'cases'
+                                data: casesData, borderColor:'rgba(229, 115, 115, 1)',fill: false, label: 'cases', yAxisID: 'cases'
                             },
                                 {
-                                    data: avgData, backgroundColor: '#b39ddb',fill: false, label: 'avg', yAxisID: 'emotion'
+                                    data: avgData, borderColor:'#b39ddb',fill: false, label: 'avg', yAxisID: 'emotion'
                                 }
                                 ]
                             }}  onElementsClick={elems => {
@@ -227,6 +227,10 @@ export default function Analysis(props) {
                                 id: 'cases',
                                 type: 'linear',
                                 position: 'left',
+                                scaleLabel: {
+                                    display: false,
+                                    labelString: 'cases'
+                                }
                             }, {
                                 id: 'emotion',
                                 type: 'linear',
@@ -234,7 +238,12 @@ export default function Analysis(props) {
                                 ticks: {
                                     max: 1,
                                     min: -1
+                                },
+                                scaleLabel: {
+                                    display: false,
+                                    labelString: 'emotion_avg'
                                 }
+
                             }],
                             xAxes: [{
                                 scaleLabel: {

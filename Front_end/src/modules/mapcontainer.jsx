@@ -252,7 +252,8 @@ class MapContainer extends Component {
             level: 3,
             searchText: '',
             expand: false,
-            lifted: false
+            lifted: false,
+            visibility: 'hidden'
         };
         this.initBorder = this.initBorder.bind(this)
         this.changeBorder = this.changeBorder.bind(this);
@@ -339,16 +340,22 @@ class MapContainer extends Component {
                 fillOpacity: 0.6
             });
             if(map.zoom>5 && (map.getCenter().lat()>-40&&map.getCenter().lat()<-30)&&(map.getCenter().lng()>135&&map.getCenter().lng()<150)) {
-                if(that.state.scale==='state')
+                if(that.state.scale==='state'){
+
+
+                    that.setState({visibility:'hidden'})
                 map.data.forEach(function(feature) {
                     map.data.remove(feature);
                 });
                 map.data.loadGeoJson('https://data.gov.au/geoserver/vic-local-government-areas-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_bdf92691_c6fe_42b9_a0e2_a4cd716fa811&outputFormat=json')
                 that.setState({scale:'suburb'})
+                }
             }
             else{
                 if(that.state.scale==='suburb')
                 {
+
+                    that.setState({visibility:'hidden'})
                     map.data.forEach(function(feature) {
                         map.data.remove(feature);
                     });
@@ -364,28 +371,6 @@ class MapContainer extends Component {
                 that.setState({scale:'state'})
             }
 
-            that.setState({
-                locationInfo: {
-                    state: searchState3.get(event.feature.getProperty('state_pid')),
-                    suburb: event.feature.getProperty('vic_lga__3')
-                }
-            })
-
-            var cases = 0
-
-            if (that.state.scale === 'state') {
-                try {
-                        cases=that.props.statecases[that.state.dateInfo.str][that.state.locationInfo.state]
-                } catch (e) {
-                }
-            } else {
-                try {
-                         cases=that.props.suburbcases[that.state.dateInfo.str][that.state.locationInfo.suburb]
-                } catch (e) {
-
-                }
-            }
-            that.setState({cases: cases})
         });
 
 
@@ -395,6 +380,31 @@ class MapContainer extends Component {
             });
 
             map.data.addListener('click', function (event) {
+
+                that.setState({
+                    locationInfo: {
+                        state: searchState3.get(event.feature.getProperty('state_pid')),
+                        suburb: event.feature.getProperty('vic_lga__3')
+                    }
+                })
+
+                var cases = 0
+
+                if (that.state.scale === 'state') {
+                    try {
+                        cases=that.props.statecases[that.state.dateInfo.str][that.state.locationInfo.state]
+                    } catch (e) {
+                    }
+                } else {
+                    try {
+                        cases=that.props.suburbcases[that.state.dateInfo.str][that.state.locationInfo.suburb]
+                    } catch (e) {
+
+                    }
+                }
+                that.setState({cases: cases})
+
+
                 if(that.state.scale==='state') {
                     try {
                         var low = transState.get(that.state.locationInfo.state)
@@ -490,11 +500,12 @@ class MapContainer extends Component {
                     }
 
                 }
+                that.setState({visibility:'visible'})
             });
 
+        this.changeBorder(map)
 
-            this.changeBorder(map)
-        }
+    }
 
     changeBorder(map) {
 
@@ -719,7 +730,7 @@ class MapContainer extends Component {
             <div>
                 <div className={classes.mapContainer}>
                     < InnerMap id="map"
-                               options={{center: {lat: -25.5, lng: 136.5}, zoom: 5, styles: mapStyles}}
+                               options={{center: {lat: -25.5, lng: 133.5}, zoom: 5, styles: mapStyles}}
                                onMapLoad={(map) => this.initBorder(map)
                                } changeBorder={this.changeBorder}/>
 
@@ -800,26 +811,31 @@ class MapContainer extends Component {
                 {/*
                             <div style={{width:"150px", height:"50px", display:this.state.show,position: 'absolute',bottom:this.state.bottom, left: this.state.left}}>
 */}
+                {this.state.visibility === 'visible' &&
                 <div style={{position: 'absolute', top: '150px', left: '160px'}}>
 
                     {this.state.scale === 'state' &&
-                     <p>state: {this.state.locationInfo.state}</p>}
+                    <p>state: {this.state.locationInfo.state}</p>}
                     {this.state.scale === 'suburb' &&
-                     <p>suburb: {this.state.locationInfo.suburb+"  "}</p>}
+                    <p>suburb: {this.state.locationInfo.suburb + "  "}</p>}
 
-                     <p>cases: {this.state.cases+" "}</p>
+                    <p>cases: {this.state.cases + " "}</p>
 
-                    <div style={{width:'100px', merginTop:"10px"}}>
-                        {this.state.pieAxis.length>0 && <p style={{marginTop:"25px",marginBottom:"-15px"}}>hot topics</p>}
-                    <Piechart pieAxis={this.state.pieAxis} pieData={this.state.pieData}/>
-                        {this.state.pieData.length>0 && <p style={{marginTop:"-8px", marginBottom:"-15px"}}>emotions</p>}
-                    <Piechart pieAxis={this.state.pie2Axis} pieData={this.state.pie2Data}/>
+                    <div style={{width: '100px', merginTop: "10px"}}>
+                        {this.state.pieAxis.length > 0 &&
+                        <p style={{marginTop: "25px", marginBottom: "-15px"}}>hot topics</p>&&
+                        <Piechart pieAxis={this.state.pieAxis} pieData={this.state.pieData}/>}
+                        {this.state.pieData.length > 0 &&
+                        <p style={{marginTop: "-8px", marginBottom: "-15px"}}>emotions</p>&&
+                        <Piechart pieAxis={this.state.pie2Axis} pieData={this.state.pie2Data}/>}
                     </div>
 
                 </div>
-                <div style={{display: 'flex', position: 'absolute', bottom: '80px', right: '100px'}}>
+                }
+
+                < div style={{display: 'flex', position: 'absolute', bottom: '80px', right: '100px'}}>
                     <Colorlegend/>
-                </div>
+                    </div>
 
 
                 {/* <FormControl>
