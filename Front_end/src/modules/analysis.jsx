@@ -282,7 +282,7 @@ export default function Analysis(props) {
                         </FormControl>
                         <br/>
                         <br/>
-                       {/* <FormControl >
+                        <FormControl >
                             <InputLabel>Date</InputLabel>
                             <Select
                                 value={date}
@@ -290,7 +290,7 @@ export default function Analysis(props) {
                                 {twitterDate.map(key =>
                                     <MenuItem value={key}>{key}</MenuItem>)}
                             </Select>
-                        </FormControl>*/}
+                        </FormControl>
                     </div>
                 </div>
                 <div style={{display:'flex', marginTop: '120px'}}>
