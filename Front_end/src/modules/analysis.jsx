@@ -92,10 +92,10 @@ export default function Analysis(props) {
 
                 topic.map(
                     (t,index) => {
-                        if(index<15){
+
                             setbarAxis(barAxis => [...barAxis, t.word])
                             setbarData(barData => [...barData, t.num])
-                        }
+
                     }
                 )
             } catch (e) {
@@ -282,7 +282,7 @@ export default function Analysis(props) {
                         </FormControl>
                         <br/>
                         <br/>
-                        <FormControl>
+                       {/* <FormControl >
                             <InputLabel>Date</InputLabel>
                             <Select
                                 value={date}
@@ -290,7 +290,7 @@ export default function Analysis(props) {
                                 {twitterDate.map(key =>
                                     <MenuItem value={key}>{key}</MenuItem>)}
                             </Select>
-                        </FormControl>
+                        </FormControl>*/}
                     </div>
                 </div>
                 <div style={{display:'flex', marginTop: '120px'}}>
@@ -298,11 +298,19 @@ export default function Analysis(props) {
                     <Bar data={{
                         labels: barAxis, datasets: [{
                             data: barData, backgroundColor: '#b39ddb',fill: false, label: 'twitter topic',
-
                         }]
-                    }}/>
+                    }} options={{
+
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0
+                                },
+                            }]
+
+                        }}}/>
                 </div>
-                    <div style={{width: '600px', height: '200px',marginLeft:'80px'}}>
+                    <div style={{width: '600px', height: '200px',marginLeft:'20px'}}>
                         <Bar data={{
                             labels: bar2Axis, datasets: [{
                                 data: bar2Data,backgroundColor: '#b39ddb', fill: false, label: 'twitter emotion',

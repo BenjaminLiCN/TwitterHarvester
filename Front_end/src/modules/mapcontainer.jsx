@@ -823,10 +823,12 @@ class MapContainer extends Component {
 
                     <div style={{width: '100px', merginTop: "10px"}}>
                         {this.state.pieAxis.length > 0 &&
-                        <p style={{marginTop: "25px", marginBottom: "-15px"}}>hot topics</p>&&
+                        <p style={{marginTop: "25px", marginBottom: "-15px"}}>hot topics</p>}
+                        {this.state.pieAxis.length > 0&&
                         <Piechart pieAxis={this.state.pieAxis} pieData={this.state.pieData}/>}
                         {this.state.pieData.length > 0 &&
-                        <p style={{marginTop: "-8px", marginBottom: "-15px"}}>emotions</p>&&
+                        <p style={{marginTop: "-8px", marginBottom: "-15px"}}>emotions</p>}
+                        {this.state.pieData.length > 0 &&
                         <Piechart pieAxis={this.state.pie2Axis} pieData={this.state.pie2Data}/>}
                     </div>
 
