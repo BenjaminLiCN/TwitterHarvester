@@ -3,10 +3,9 @@
 
 ### **Website**
 ---
-[Tweets Analysis amid COVID-19 Pandemic in Australia](http://172.26.131.49/)
-> *(UniMelb [Cisco VPN](https://studentit.unimelb.edu.au/wireless-vpn/vpn) is required)*
+- [Tweets Analysis amid COVID-19 Pandemic in Australia](http://172.26.131.49/) *(UniMelb [Cisco VPN](https://studentit.unimelb.edu.au/wireless-vpn/vpn) is required)*
 
-[Architechture and Deployment](https://www.youtube.com/watch?v=KxHfEahMRIs&feature=youtu.be)
+- [Architechture and Deployment](https://www.youtube.com/watch?v=KxHfEahMRIs&feature=youtu.be)
 
 ### **Project Description**
 ---
