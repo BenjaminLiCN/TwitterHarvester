@@ -1,3 +1,14 @@
+"""
+@author: Team18(member details are as follows)
+
+Name(Firstname Surname)	|	Username	|	StudentID	|	City
+---------------------------------------------------------------------
+Chuang Wang             |   chuangw     |   791793      | Melbourne
+Honglong Zhang          |   honglongz   |   985262      | Melbourne
+Jingyi Li               |   jili        |   961543      | Melbourne
+Wei Lin                 |   wlin8       |   885536      | Melbourne
+Yangyang Hu             |   Yangyangh1  |   978954      | Melbourne
+"""
 # gather all the twitter API account
 developer_1 = {}
 developer_1['developer_id'] = 1
@@ -21,7 +32,7 @@ developer_3['consumer_key'] = "hXM6f3Ik6yWZbwL1Upb6WThYs"
 developer_3['consumer_secret'] = "nDQPHblKhV7VNwkvzPgWC1JRXfZHmgw1ko5JYvUGF4rlRdBgkV"
 developer_3['access_token'] = "1251498874994225152Q81OgNz2MXud5w87uEzHCCFek5Vb7E"
 developer_3['access_token_secret'] = "3FnyteLKxNRTQNV2Zxq6gjRsrVAtfoY2QNbz7banthItv"
-developer_3['search_by_location'] = [('Northern Territory', '-21.7979,133.5341,1163.5738km')]
+developer_3['search_by_location'] = [('Northern Territory','-21.7979,133.5341,1163.5738km')]
 
 developer_4 = {}
 developer_4['developer_id'] = 4
@@ -29,7 +40,7 @@ developer_4['consumer_key'] = "PhsvvKJdgTDCWaY1yIjTpNMQu"
 developer_4['consumer_secret'] = "YkwLsShBt6yFKiM4PU3UfMGe4VIAPedRGFGXovmDaqd0QPTLhm"
 developer_4['access_token'] = "1213766792352395266-xCldWvcu46Lo8VyBAFNhtMlybt7VeB"
 developer_4['access_token_secret'] = "ua0egDYvU9YTT9Aj0lQWd8wY6uvySxnAnSihiDADJcrQD"
-developer_4['search_by_location'] = [('Queensland', '-28.3640,152.0734,1942.3921km')]
+developer_4['search_by_location'] = [('Queensland','-28.3640,152.0734,1942.3921km')]
 
 
 developer_5 = {}
@@ -38,7 +49,7 @@ developer_5['consumer_key'] = "aJtd8o0rnMaGcMpbKRINRevRV"
 developer_5['consumer_secret'] = "0tm1FMMl8rdRYf9zmsgSvg39JlZo9yI8wgFma1C2uHuTKSrjI7"
 developer_5['access_token'] = "1134086355712061440pOeZEjaC2MPnCmYfJJmRh5ZbbpnPta"
 developer_5['access_token_secret'] = "vf7bbxdcQfO1IukhHKZjaIeFFjVFhBY4p12BvlOJS2IOt"
-developer_5['search_by_location'] = [('Tasmania', '-43.1213,147.0267,245.9167km')]
+developer_5['search_by_location'] = [('Tasmania','-43.1213,147.0267,245.9167km')]
 
 developer_6 = {}
 developer_6['developer_id'] = 6
@@ -46,7 +57,7 @@ developer_6['consumer_key'] = "DwIYk9GSzF0E75ET3fKseSq6P"
 developer_6['consumer_secret'] = "tw59x0jkxxEOh96lg1vwwQOk9F4ob90rc2COwcmgf7LzYejTke"
 developer_6['access_token'] = "1247734713449504768qnscbsPkRH97eIr7jx83uSIMubUFmO"
 developer_6['access_token_secret'] = "Wnbp0uC211he55gqFPuF9XMAa1723PsTZJBT7Q609ZiDy"
-developer_6['search_by_location'] = [('South Australia', '-34.9285,138.6007,776.17km')]
+developer_6['search_by_location'] = [('South Australia','-34.9285,138.6007,776.17km')]
 
 developer_7 = {}
 developer_7['developer_id'] = 7
@@ -54,7 +65,7 @@ developer_7['consumer_key'] = "RDkYXYW4G9RCC9qlKUlpvTz5F"
 developer_7['consumer_secret'] = "H0jvaLBmIZutwknYswu9BCwWa54CEfTHLKFCDJVx83bBoaJH7j"
 developer_7['access_token'] = "1251717495431368705-pjrx9WjV6gWZTC7OjJO3LdXtihX1Qs"
 developer_7['access_token_secret'] = "Km0ayCPLk1BwEjZgQ37O3uU9PAf2A3WArPaifSrZBblHP"
-developer_7['search_by_location'] = [('New South Wales', '-33.8688,151.2093,1147.3195km')]
+developer_7['search_by_location'] = [('New South Wales','-33.8688,151.2093,1147.3195km')]
 
 developer_8 = {}
 developer_8['developer_id'] = 8
@@ -62,12 +73,10 @@ developer_8['consumer_key'] = "kU5CURnt2Ha2Daez16dcImIlV"
 developer_8['consumer_secret'] = "Rp2m9psnB6XwrVRJgRSmO20ftJq567CI7wD9FCNTaNxcsS436J"
 developer_8['access_token'] = "1250360967583563776-CJE7yOUBUmni6jCscbXDMphrzZOf3e"
 developer_8['access_token_secret'] = "zaVHFqrn3sMT5vRySRzIKA06478zCGJBzb8crASQlocSn"
-developer_8['search_by_location'] = [('Victoria', '-37.4713,144.7852,848.7016km')]
+developer_8['search_by_location'] = [('Victoria','-37.4713,144.7852,848.7016km')]
 
 
 config = {}
 temp = locals()
 for i in range(8):
-    config[i+1] = locals()["developer_"+str(i+1)]
-
-
+    config[i + 1] = locals()["developer_" + str(i + 1)]

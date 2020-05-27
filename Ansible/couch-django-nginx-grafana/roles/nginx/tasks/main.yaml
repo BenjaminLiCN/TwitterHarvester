@@ -1,3 +1,12 @@
+#  @author: Team18(member details are as follows)
+#
+#    Name(Firstname Surname)	|	Username	|	StudentID	|	City
+#    ---------------------------------------------------------------------
+#    Chuang Wang				|	chuangw		|	791793		| Melbourne
+#    Honglong Zhang			    |	honglongz	|	985262		| Melbourne
+#    Jingyi Li				    |	jili		|	961543		| Melbourne
+#    Wei Lin					|	wlin8		|	885536		| Melbourne
+#    Yangyang Hu				|	Yangyangh1	|	978954		| Melbourne
 ---
 - name: Ansible check directory exists example.
   stat:
@@ -20,7 +29,7 @@
     group: "{{ ansible_user }}"
   when: inventory_hostname == "{{ groups.couches[0] }}"
   
-- name: copy Dockerfile to all host
+- name: copy Dockerfile to coordinator
   become: yes
   template:
     src: Dockerfile
@@ -28,17 +37,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   when: inventory_hostname == "{{ groups.couches[0] }}"
-    
-#- name: copy nginx config file to all host but coordinator
-#  become: yes
-#  template:
-#    src: default.conf
-#    dest: "{{ nginx_path }}/default.conf"
-#    owner: "{{ ansible_user }}"
-#    group: "{{ ansible_user }}"
-#  when: inventory_hostname != "{{ groups.couches[0] }}"
   
-#- name: copy front-end files to coordinator
 - name: copy coordinator config file
   become: yes
   template:
@@ -48,7 +47,7 @@
     group: "{{ ansible_user }}"
   when: inventory_hostname == "{{ groups.couches[0] }}"
 
-- name: run Dockerfile on each host
+- name: run Dockerfile on coordinator
   become: yes
   shell: |
     docker stop load-balancer

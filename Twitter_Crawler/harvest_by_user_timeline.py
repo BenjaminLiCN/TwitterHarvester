@@ -1,8 +1,19 @@
+"""
+@author: Team18(member details are as follows)
+
+Name(Firstname Surname)	|	Username	|	StudentID	|	City
+---------------------------------------------------------------------
+Chuang Wang             |   chuangw     |   791793      | Melbourne
+Honglong Zhang          |   honglongz   |   985262      | Melbourne
+Jingyi Li               |   jili        |   961543      | Melbourne
+Wei Lin                 |   wlin8       |   885536      | Melbourne
+Yangyang Hu             |   Yangyangh1  |   978954      | Melbourne
+"""
 import time
 import numpy
 from couchdb import Server
 from tweepy import OAuthHandler, AppAuthHandler, API, TweepError
-from crawler import save_tweets, developer_keys_tokens
+from Twitter_Crawler import save_tweets, developer_keys_tokens
 import datetime
 import sys
 
@@ -70,8 +81,6 @@ class Harvest_by_user_timeline:
 
             max_id = fresh_tweets[-1].id - 1
             save_tweets.save_search_tweets(save_tweets.tweets_cleaning(to_save))
-
-
 
             # if fresh_tweets and fresh_tweets[-1].created_at > start_date:
             #     max_id = fresh_tweets[-1].id - 1  # update max_id to harvester earlier data

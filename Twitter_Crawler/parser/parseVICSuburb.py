@@ -1,3 +1,14 @@
+"""
+@author: Team18(member details are as follows)
+
+Name(Firstname Surname)	|	Username	|	StudentID	|	City
+---------------------------------------------------------------------
+Chuang Wang             |   chuangw     |   791793      | Melbourne
+Honglong Zhang          |   honglongz   |   985262      | Melbourne
+Jingyi Li               |   jili        |   961543      | Melbourne
+Wei Lin                 |   wlin8       |   885536      | Melbourne
+Yangyang Hu             |   Yangyangh1  |   978954      | Melbourne
+"""
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from couchdb import Server
