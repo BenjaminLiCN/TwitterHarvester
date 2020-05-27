@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1ffe4d33-ed66-4f3d-8758-94b8512ff54a" name="Default Changelist" comment="" />
+    <list default="true" id="1ffe4d33-ed66-4f3d-8758-94b8512ff54a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/append_data/appendDataFromCrawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/append_data/appendDataFromCrawler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/append_data/appendDataFromDB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/append_data/appendDataFromDB.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/append_data/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/append_data/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/append_data/write_data_to_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/append_data/write_data_to_db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/developer_keys_tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/developer_keys_tokens.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/harvest_by_locations.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/harvest_by_locations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/harvest_by_user_timeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/harvest_by_user_timeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/parser/multipolygon.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/parser/multipolygon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/parser/parseVICSuburb.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/parser/parseVICSuburb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/parser/parse_states.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/parser/parse_states.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/save_tweets.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/save_tweets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter_Crawler/util/save_states_polygons.py" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter_Crawler/util/save_states_polygons.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/twitterHarvester/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/twitterHarvester/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/twitterHarvester/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/twitterHarvester/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,6 +69,7 @@
       <updated>1588760251423</updated>
       <workItem from="1588760252763" duration="19102000" />
       <workItem from="1590539985845" duration="55000" />
+      <workItem from="1590540305192" duration="857000" />
     </task>
     <servers />
   </component>

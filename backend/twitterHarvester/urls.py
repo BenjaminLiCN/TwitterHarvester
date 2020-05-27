@@ -1,7 +1,7 @@
 """
 @author: Team18(member details are as follows)
 
-Name(LastName Surname)	|	Username	|	StudentID	|	City
+Name(Firstname Surname)	|	Username	|	StudentID	|	City
 ---------------------------------------------------------------------
 Chuang Wang				|	chuangw		|	791793		| Melbourne
 Honglong Zhang			|	honglongz	|	985262		| Melbourne
