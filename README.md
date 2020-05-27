@@ -7,6 +7,8 @@
 
 - [Architechture and Deployment](https://www.youtube.com/watch?v=KxHfEahMRIs&feature=youtu.be)
 
+- [Frontend Demonstration](https://www.youtube.com/watch?v=FbdPkWOHFGw&feature=youtu.be)
+
 ### **Project Description**
 ---
 Starting from 30 January 2020 when WHO declared the COVID-19 outbreak was a public health emergency of international concern, COVID-19 has caused significant social and economic disruption. As the COVID-19 pandemic and its far-reaching implications continue to unfold globally and, in our community, many people have been dealing with the unforeseen challenges because of self-isolation, social distancing and public area closure etc. Those challenges have been making people naturally experience a wide range of thoughts, feelings and reactions which are expressed via social platforms in various ways.  For instance, in Australia, a huge volume of text data is created on Twitter, which gives us a good way to understand people’s emotions amidst the pandemic chaos and possibly provide insights for experts or governors to make policies to provide health and wellbeing support for their people.
