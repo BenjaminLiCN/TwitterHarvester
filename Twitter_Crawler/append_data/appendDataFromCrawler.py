@@ -1,3 +1,14 @@
+"""
+@author: Team18(member details are as follows)
+
+Name(LastName Surname)  |   Username    |   StudentID   |   City
+---------------------------------------------------------------------
+Chuang Wang             |   chuangw     |   791793      | Melbourne
+Honglong Zhang          |   honglongz   |   985262      | Melbourne
+Jingyi Li               |   jili        |   961543      | Melbourne
+Wei Lin                 |   wlin8       |   885536      | Melbourne
+Yangyang Hu             |   Yangyangh1  |   978954      | Melbourne
+"""
 import couchdb
 from couchdb import Server
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
